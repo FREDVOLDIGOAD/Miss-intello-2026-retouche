@@ -1,122 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useState, useEffect } from 'react';
+import { supabase } from './supabaseClient';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [candidates, setCandidates] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => { fetchCandidates(); }, []);
+
+  const fetchCandidates = async () => {
+    const { data, error } = await supabase.from('candidates').select('*').order('id');
+    if (error) console.error(error);
+    else setCandidates(data || []);
+    setLoading(false);
+  };
+
+  const handleVote = async (cId) => {
+    const phone = prompt("Numéro Togo (8 chiffres):");
+    const net = prompt("Réseau (TMONEY ou FLOOZ):").toUpperCase();
+    const qty = prompt("Nombre de votes (200F l'unité):");
+    if (!phone || !qty || (net !== "TMONEY" && net !== "FLOOZ")) return alert("Infos invalides");
+
+    const { data, error } = await supabase.functions.invoke('paygate-init', {
+      body: { candidateId: cId, phoneNumber: phone, network: net, amount: qty * 200 }
+    });
+
+    if (error) alert("Erreur: " + error.message);
+    else alert("Paiement initié ! Validez sur votre téléphone.");
+  };
+
+  if (loading) return <p style={{textAlign:'center', marginTop:50}}>Chargement des candidates...</p>;
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <div style={{ padding: 20, fontFamily: 'sans-serif', textAlign: 'center', color: 'white' }}>
+      <h1>MISS INTELLO 2026</h1>
+      <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap', marginTop: 40 }}>
+        {candidates.length > 0 ? candidates.map(c => (
+          <div key={c.id} style={{ border: '1px solid #555', padding: 20, borderRadius: 15, width: 220, background: '#1a1a1a' }}>
+            <img src={c.photo_url || 'https://via.placeholder.com/150'} style={{ width: '100%', borderRadius: 10 }} />
+            <h3>{c.name}</h3>
+            <p style={{ fontSize: 24, fontWeight: 'bold', color: '#00d1b2' }}>{c.total_votes || 0} votes</p>
+            <button onClick={() => handleVote(c.id)} style={{ width: '100%', padding: 12, cursor: 'pointer', background: '#00d1b2', color: '#000', border: 'none', borderRadius: 8, fontWeight: 'bold' }}>
+              VOTER (200F)
+            </button>
+          </div>
+        )) : <p>Aucune candidate trouvée dans la base de données.</p>}
+      </div>
+    </div>
+  );
 }
-
-export default App
