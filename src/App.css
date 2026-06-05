@@ -279,3 +279,125 @@ footer {
   from { transform: translateY(50px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+.payment-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(10px);
+}
+
+.payment-modal {
+  background: #1a0b2e; /* Violet profond */
+  border: 1px solid var(--primary-gold);
+  border-radius: 25px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  box-shadow: 0 0 50px rgba(107, 33, 168, 0.5);
+  animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.payment-title {
+  color: var(--primary-gold);
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.payment-subtitle {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #ccc;
+  margin-bottom: 25px;
+}
+
+.payment-subtitle span { color: white; font-weight: bold; }
+
+.payment-form label {
+  display: block;
+  font-size: 0.8rem;
+  margin-bottom: 8px;
+  color: #b085ff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.network-selector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.network-selector button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.network-selector button.active {
+  border-color: var(--primary-gold);
+  background: rgba(212, 175, 55, 0.2);
+  color: var(--primary-gold);
+  font-weight: bold;
+}
+
+.payment-form input {
+  width: 100%;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.3);
+  color: white;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.total-box {
+  background: rgba(212, 175, 55, 0.1);
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 25px;
+  border: 1px dashed var(--primary-gold);
+}
+
+.total-box span {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--primary-gold);
+}
+
+.confirm-btn {
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(45deg, var(--primary-gold), #f2d06b);
+  border: none;
+  border-radius: 15px;
+  color: #1a0b2e;
+  font-weight: 800;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px; right: 20px;
+  background: none; border: none;
+  color: white; font-size: 1.5rem;
+  cursor: pointer;
+}

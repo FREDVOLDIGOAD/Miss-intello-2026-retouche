@@ -3,9 +3,15 @@ import { supabase } from './supabaseClient';
 import './App.css';
 
 export default function App() {
+  // États de base
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCandidate, setSelectedCandidate] = useState(null); // Pour la modal
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
+
+  // Nouveaux états pour le paiement personnalisé
+  const [showVoteModal, setShowVoteModal] = useState(false);
+  const [voteData, setVoteData] = useState({ qty: 1, phone: '', network: 'TMONEY' });
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => { fetchCandidates(); }, []);
 
@@ -15,38 +21,61 @@ export default function App() {
     setLoading(false);
   };
 
-  // Fonction de Partage
+  // Fonction pour ouvrir la fenêtre de vote
+  const handleVoteClick = (candidate) => {
+    setSelectedCandidate(candidate); // On mémorise la candidate
+    setShowVoteModal(true); // On ouvre la fenêtre de paiement
+  };
+
+  // Fonction finale qui appelle l'API PayGate
+  const confirmPayment = async () => {
+    const { qty, phone, network } = voteData;
+    
+    if (!phone || phone.length < 8) {
+      return alert("Veuillez entrer un numéro Togo valide (8 chiffres).");
+    }
+
+    setIsProcessing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('paygate-init', {
+        body: { 
+          candidateId: selectedCandidate.id, 
+          phoneNumber: phone, 
+          network: network, 
+          amount: qty * 200 
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        alert("✅ Demande envoyée ! Veuillez confirmer la transaction sur votre téléphone en tapant votre code PIN.");
+        setShowVoteModal(false);
+        setVoteData({ qty: 1, phone: '', network: 'TMONEY' }); // Reset
+      }
+    } catch (err) {
+      alert("❌ Erreur : " + (err.message || "Le service de paiement est indisponible."));
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const handleShare = async (candidate) => {
     const shareData = {
       title: `Votez pour ${candidate.name}`,
-      text: `Soutenez ${candidate.name} au concours Miss Intello 2026 ! Elle a déjà ${candidate.total_votes} votes.`,
+      text: `Soutenez ${candidate.name} au concours Miss Intello 2026 !`,
       url: window.location.href,
     };
     try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        alert("Lien copié dans le presse-papier !");
+      if (navigator.share) await navigator.share(shareData);
+      else {
         navigator.clipboard.writeText(window.location.href);
+        alert("Lien copié !");
       }
     } catch (err) { console.log(err); }
   };
 
-  const handleVote = async (cId) => {
-    const phone = prompt("Numéro Togo (8 chiffres):");
-    const net = prompt("Réseau (TMONEY ou FLOOZ):").toUpperCase();
-    const qty = prompt("Nombre de votes (200F l'unité):");
-    if (!phone || !qty || (net !== "TMONEY" && net !== "FLOOZ")) return alert("Infos invalides");
-
-    const { data, error } = await supabase.functions.invoke('paygate-init', {
-      body: { candidateId: cId, phoneNumber: phone, network: net, amount: qty * 200 }
-    });
-
-    if (error) alert(error.message);
-    else alert("Paiement initié ! Validez sur votre téléphone.");
-  };
-
-  if (loading) return <div className="loading">Chargement...</div>;
+  if (loading) return <div className="loading">Chargement de l'élégance...</div>;
 
   return (
     <div className="container">
@@ -55,6 +84,7 @@ export default function App() {
         <p className="subtitle">L'intelligence est la nouvelle beauté</p>
       </header>
 
+      {/* GRILLE DES CANDIDATES */}
       <div className="grid">
         {candidates.map(c => (
           <div key={c.id} className="card">
@@ -65,7 +95,7 @@ export default function App() {
               <h3 className="name">{c.name}</h3>
               <div className="vote-count">{c.total_votes || 0} <span>VOTES</span></div>
               
-              <button className="btn-vote" onClick={() => handleVote(c.id)}>VOTER MAINTENANT</button>
+              <button className="btn-vote" onClick={() => handleVoteClick(c)}>VOTER MAINTENANT</button>
               
               <div className="btn-group">
                 <button className="btn-secondary" onClick={() => setSelectedCandidate(c)}>Détails</button>
@@ -76,29 +106,85 @@ export default function App() {
         ))}
       </div>
 
-      {/* MODAL DES DÉTAILS */}
-      {selectedCandidate && (
+      {/* FENÊTRE DÉTAILS (MODAL DÉTAILS) */}
+      {selectedCandidate && !showVoteModal && (
         <div className="modal-overlay" onClick={() => setSelectedCandidate(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <button className="close-modal" onClick={() => setSelectedCandidate(null)}>&times;</button>
-            <div className="modal-body">
-              <img src={selectedCandidate.photo_url} alt={selectedCandidate.name} className="modal-img" />
-              <div className="modal-info">
-                <h2>{selectedCandidate.name}</h2>
-                <div className="specs">
-                  <span><strong>Âge:</strong> {selectedCandidate.age || '--'} ans</span>
-                  <span><strong>Taille:</strong> {selectedCandidate.taille || '--'} m</span>
-                  <span><strong>Poids:</strong> {selectedCandidate.poids || '--'} kg</span>
-                </div>
-                <p className="bio">{selectedCandidate.biography || "Aucune biographie disponible pour le moment."}</p>
-                <button className="btn-vote" onClick={() => {handleVote(selectedCandidate.id); setSelectedCandidate(null);}}>VOTER POUR ELLE</button>
+            <div className="modal-header">
+                <span className="badge-miss">MISS</span>
+                <h2 className="modal-name">{selectedCandidate.name}</h2>
+            </div>
+            <div className="modal-grid-specs">
+                <div className="spec-card"><span>Âge</span><strong>{selectedCandidate.age || '--'} ans</strong></div>
+                <div className="spec-card"><span>Taille</span><strong>{selectedCandidate.taille || '--'} m</strong></div>
+                <div className="spec-card"><span>Poids</span><strong>{selectedCandidate.poids || '--'} kg</strong></div>
+            </div>
+            <div className="bio-section">
+                <div className="bio-title">📖 Biographie</div>
+                <p className="bio-text">{selectedCandidate.biography}</p>
+            </div>
+            <button className="btn-main-vote" onClick={() => handleVoteClick(selectedCandidate)}>
+                ❤️ Voter pour {selectedCandidate.name}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* FENÊTRE DE PAIEMENT (MODAL VOTE) */}
+      {showVoteModal && (
+        <div className="payment-overlay" onClick={() => !isProcessing && setShowVoteModal(false)}>
+          <div className="payment-modal" onClick={e => e.stopPropagation()}>
+            <button className="close-btn" onClick={() => setShowVoteModal(false)}>&times;</button>
+            
+            <h2 className="payment-title">Finaliser votre Vote</h2>
+            <p className="payment-subtitle">Soutien pour <span>{selectedCandidate?.name}</span></p>
+
+            <div className="payment-form">
+              <label>Choisir le réseau :</label>
+              <div className="network-selector">
+                <button 
+                  className={voteData.network === 'TMONEY' ? 'active' : ''} 
+                  onClick={() => setVoteData({...voteData, network: 'TMONEY'})}>
+                  TMONEY
+                </button>
+                <button 
+                  className={voteData.network === 'FLOOZ' ? 'active' : ''} 
+                  onClick={() => setVoteData({...voteData, network: 'FLOOZ'})}>
+                  FLOOZ
+                </button>
               </div>
+
+              <label>Numéro de téléphone (8 chiffres) :</label>
+              <input 
+                type="tel" 
+                placeholder="Ex: 90010203" 
+                value={voteData.phone}
+                onChange={(e) => setVoteData({...voteData, phone: e.target.value.replace(/\D/g, '')})}
+                maxLength="8"
+              />
+
+              <label>Nombre de votes :</label>
+              <input 
+                type="number" 
+                min="1"
+                value={voteData.qty}
+                onChange={(e) => setVoteData({...voteData, qty: Math.max(1, parseInt(e.target.value) || 1)})}
+              />
+
+              <div className="total-box">
+                Total à payer : <span>{voteData.qty * 200} FCFA</span>
+              </div>
+
+              <button className="confirm-btn" onClick={confirmPayment} disabled={isProcessing}>
+                {isProcessing ? "CONNEXION PAYGATE..." : `CONFIRMER (${voteData.qty * 200}F)`}
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      <footer>&copy; 2026 Miss Intello Final - PayGate Global Protection</footer>
+      <footer>&copy; 2026 Miss Intello Final - Sécurisé par PayGate Global</footer>
     </div>
   );
 }
