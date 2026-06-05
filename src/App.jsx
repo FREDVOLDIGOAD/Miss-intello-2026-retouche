@@ -78,68 +78,25 @@ export default function App() {
 
       {/* MODAL DES DÉTAILS */}
       {selectedCandidate && (
-  <div className="modal-overlay" onClick={() => setSelectedCandidate(null)}>
-    <div className="modal-content" onClick={e => e.stopPropagation()}>
-      <button className="close-modal" onClick={() => setSelectedCandidate(null)}>&times;</button>
-      
-      <div className="modal-header">
-        <span className="badge-miss">MISS</span>
-        <h2 className="modal-name">{selectedCandidate.name}</h2>
-      </div>
-
-      <div className="modal-grid-stats">
-        <div className="stat-card">
-          <div className="stat-icon">🗳️</div>
-          <div className="stat-texts">
-            <span className="stat-label">Votes</span>
-            <span className="stat-value">{selectedCandidate.total_votes || 0}</span>
+        <div className="modal-overlay" onClick={() => setSelectedCandidate(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <button className="close-modal" onClick={() => setSelectedCandidate(null)}>&times;</button>
+            <div className="modal-body">
+              <img src={selectedCandidate.photo_url} alt={selectedCandidate.name} className="modal-img" />
+              <div className="modal-info">
+                <h2>{selectedCandidate.name}</h2>
+                <div className="specs">
+                  <span><strong>Âge:</strong> {selectedCandidate.age || '--'} ans</span>
+                  <span><strong>Taille:</strong> {selectedCandidate.taille || '--'} m</span>
+                  <span><strong>Poids:</strong> {selectedCandidate.poids || '--'} kg</span>
+                </div>
+                <p className="bio">{selectedCandidate.biography || "Aucune biographie disponible pour le moment."}</p>
+                <button className="btn-vote" onClick={() => {handleVote(selectedCandidate.id); setSelectedCandidate(null);}}>VOTER POUR ELLE</button>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon">💵</div>
-          <div className="stat-texts">
-            <span className="stat-label">Montant / vote</span>
-            <span className="stat-value">200 FCFA</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="modal-grid-specs">
-        <div className="spec-card">
-          <span className="spec-label">Âge</span>
-          <span className="spec-value">{selectedCandidate.age || '--'} ans</span>
-        </div>
-        <div className="spec-card">
-          <span className="spec-label">Taille</span>
-          <span className="spec-value">{selectedCandidate.taille || '--'} m</span>
-        </div>
-        <div className="spec-card">
-          <span className="spec-label">Poids</span>
-          <span className="spec-value">{selectedCandidate.poids || '--'} kg</span>
-        </div>
-      </div>
-
-      <div className="bio-section">
-        <div className="bio-title">
-          <span>📖</span> Biographie
-        </div>
-        <p className="bio-text">
-          {selectedCandidate.biography || "Cette candidate n'a pas encore rempli sa biographie."}
-        </p>
-      </div>
-
-      <div className="modal-actions">
-        <button className="btn-main-vote" onClick={() => handleVote(selectedCandidate.id)}>
-          ❤️ Voter pour {selectedCandidate.name}
-        </button>
-        <button className="btn-share" onClick={() => handleShare(selectedCandidate)}>
-          🔗 Partager le profil
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-      
+      )}
 
       <footer>&copy; 2026 Miss Intello Final - PayGate Global Protection</footer>
     </div>
