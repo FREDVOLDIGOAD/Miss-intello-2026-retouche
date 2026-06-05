@@ -188,7 +188,6 @@ export default function App() {
           </div>
         </div>
       )}
-
       <footer className="site-footer">
         <div className="footer-content">
           <div className="footer-section">
@@ -220,5 +219,7 @@ export default function App() {
           <div className="paygate-badge">Paiements sécurisés par PayGate Global</div>
         </div>
       </footer>
+    </div>
+    
   );
 }
