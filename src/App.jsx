@@ -189,7 +189,36 @@ export default function App() {
         </div>
       )}
 
-      <footer>&copy; 2026 Miss Intello Final - Sécurisé par PayGate Global</footer>
-    </div>
+      <footer className="site-footer">
+        <div className="footer-content">
+          <div className="footer-section">
+            <h3 className="footer-logo">Miss Intello <span>2026</span></h3>
+            <p>L'excellence et l'intelligence au service du leadership féminin au Togo.</p>
+          </div>
+
+          <div className="footer-section">
+            <h4>Aide & Support</h4>
+            <ul>
+              <li><i className="fa-solid fa-phone"></i> +228 90 83 64 94</li>
+              <li><i className="fa-solid fa-envelope"></i> comitemissintello1@gmail.com</li>
+              <li>Lomé, Togo</li>
+            </ul>
+          </div>
+
+          <div className="footer-section">
+            <h4>Mentions Légales</h4>
+            <ul>
+              <li><a href="#/" onClick={() => alert("Éditeur : Comité Miss Intello. Hébergeur : Vercel Inc. Système de vote sécurisé par PayGate Global.")}>Mentions Légales</a></li>
+              <li><a href="#/" onClick={() => alert("Les votes ne sont ni remboursables ni annulables une fois confirmés par l'opérateur (TMoney/Flooz).")}>CGV / CGU</a></li>
+              <li><a href="#/" onClick={() => alert("Vos données de paiement sont traitées exclusivement par PayGate Global. Aucune donnée bancaire n'est stockée sur nos serveurs.")}>Confidentialité</a></li>
+            </ul>
+          </div>
+        </div>
+        
+        <div className="footer-bottom">
+          <p>&copy; {new Date().getFullYear()} Miss Intello Togo - Tous droits réservés.</p>
+          <div className="paygate-badge">Paiements sécurisés par PayGate Global</div>
+        </div>
+      </footer>
   );
 }
