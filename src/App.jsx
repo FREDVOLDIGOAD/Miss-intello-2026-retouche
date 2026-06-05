@@ -164,20 +164,25 @@ export default function App() {
                 maxLength="8"
               />
 
-              <label>Nombre de votes :</label>
+              <label>Nombre de votes (200F / vote) :</label>
               <input 
                 type="number" 
                 min="1"
                 value={voteData.qty}
-                onChange={(e) => setVoteData({...voteData, qty: Math.max(1, parseInt(e.target.value) || 1)})}
+                /* Correction : On s'assure que la valeur est bien transformée en nombre */
+                onChange={(e) => {
+                  const val = parseInt(e.target.value);
+                  setVoteData({...voteData, qty: isNaN(val) ? 0 : val});
+                }}
               />
 
               <div className="total-box">
-                Total à payer : <span>{voteData.qty * 200} FCFA</span>
+                {/* On multiplie en temps réel la quantité par 200 */}
+                Total à payer : <span>{(voteData.qty * 200).toLocaleString()} FCFA</span>
               </div>
 
-              <button className="confirm-btn" onClick={confirmPayment} disabled={isProcessing}>
-                {isProcessing ? "CONNEXION PAYGATE..." : `CONFIRMER (${voteData.qty * 200}F)`}
+              <button className="confirm-btn" onClick={confirmPayment} disabled={isProcessing || voteData.qty <= 0}>
+                {isProcessing ? "CONNEXION PAYGATE..." : `CONFIRMER (${(voteData.qty * 200).toLocaleString()}F)`}
               </button>
             </div>
           </div>
