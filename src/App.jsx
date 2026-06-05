@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
-import './App.css'; // On importe le nouveau style
+import './App.css';
 
 export default function App() {
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCandidate, setSelectedCandidate] = useState(null); // Pour la modal
 
   useEffect(() => { fetchCandidates(); }, []);
 
@@ -14,28 +15,44 @@ export default function App() {
     setLoading(false);
   };
 
+  // Fonction de Partage
+  const handleShare = async (candidate) => {
+    const shareData = {
+      title: `Votez pour ${candidate.name}`,
+      text: `Soutenez ${candidate.name} au concours Miss Intello 2026 ! Elle a déjà ${candidate.total_votes} votes.`,
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        alert("Lien copié dans le presse-papier !");
+        navigator.clipboard.writeText(window.location.href);
+      }
+    } catch (err) { console.log(err); }
+  };
+
   const handleVote = async (cId) => {
-    const phone = prompt("Numéro (8 chiffres) :");
-    const net = prompt("Réseau (TMONEY ou FLOOZ) :").toUpperCase();
-    const qty = prompt("Nombre de votes (200F l'unité) :");
-    
+    const phone = prompt("Numéro Togo (8 chiffres):");
+    const net = prompt("Réseau (TMONEY ou FLOOZ):").toUpperCase();
+    const qty = prompt("Nombre de votes (200F l'unité):");
     if (!phone || !qty || (net !== "TMONEY" && net !== "FLOOZ")) return alert("Infos invalides");
 
     const { data, error } = await supabase.functions.invoke('paygate-init', {
       body: { candidateId: cId, phoneNumber: phone, network: net, amount: qty * 200 }
     });
 
-    if (error) alert("Erreur: " + error.message);
-    else alert("✅ Demande envoyée ! Confirmez sur votre téléphone.");
+    if (error) alert(error.message);
+    else alert("Paiement initié ! Validez sur votre téléphone.");
   };
 
-  if (loading) return <div className="loading">Chargement de l'élégance...</div>;
+  if (loading) return <div className="loading">Chargement...</div>;
 
   return (
     <div className="container">
       <header>
         <h1 className="logo">Miss Intello 2026</h1>
-        <p style={{color: '#aaa'}}>L'intelligence est la nouvelle beauté</p>
+        <p className="subtitle">L'intelligence est la nouvelle beauté</p>
       </header>
 
       <div className="grid">
@@ -46,18 +63,42 @@ export default function App() {
             </div>
             <div className="info">
               <h3 className="name">{c.name}</h3>
-              <div className="vote-count">{c.total_votes || 0} <span style={{fontSize: '1rem'}}>VOTES</span></div>
-              <button className="btn-vote" onClick={() => handleVote(c.id)}>
-                VOTER POUR ELLE
-              </button>
+              <div className="vote-count">{c.total_votes || 0} <span>VOTES</span></div>
+              
+              <button className="btn-vote" onClick={() => handleVote(c.id)}>VOTER MAINTENANT</button>
+              
+              <div className="btn-group">
+                <button className="btn-secondary" onClick={() => setSelectedCandidate(c)}>Détails</button>
+                <button className="btn-secondary" onClick={() => handleShare(c)}>Partager</button>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      <footer style={{marginTop: 80, opacity: 0.5, fontSize: '0.8rem'}}>
-        &copy; 2026 Concours Miss Intello - Paiements sécurisés par PayGate Global
-      </footer>
+      {/* MODAL DES DÉTAILS */}
+      {selectedCandidate && (
+        <div className="modal-overlay" onClick={() => setSelectedCandidate(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <button className="close-modal" onClick={() => setSelectedCandidate(null)}>&times;</button>
+            <div className="modal-body">
+              <img src={selectedCandidate.photo_url} alt={selectedCandidate.name} className="modal-img" />
+              <div className="modal-info">
+                <h2>{selectedCandidate.name}</h2>
+                <div className="specs">
+                  <span><strong>Âge:</strong> {selectedCandidate.age || '--'} ans</span>
+                  <span><strong>Taille:</strong> {selectedCandidate.taille || '--'} m</span>
+                  <span><strong>Poids:</strong> {selectedCandidate.poids || '--'} kg</span>
+                </div>
+                <p className="bio">{selectedCandidate.biography || "Aucune biographie disponible pour le moment."}</p>
+                <button className="btn-vote" onClick={() => {handleVote(selectedCandidate.id); setSelectedCandidate(null);}}>VOTER POUR ELLE</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <footer>&copy; 2026 Miss Intello Final - PayGate Global Protection</footer>
     </div>
   );
 }
