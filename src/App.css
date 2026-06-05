@@ -279,3 +279,129 @@ footer {
   from { transform: translateY(50px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+/* --- STYLE MODAL DÉTAILS (Inspiré de ton image) --- */
+
+.modal-content {
+  background-color: #16122b; /* Violet très sombre */
+  color: white;
+  padding: 30px;
+  border-radius: 30px;
+  max-width: 600px;
+  width: 95%;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.badge-miss {
+  background: rgba(212, 175, 55, 0.2);
+  color: #f2d06b;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.modal-name {
+  font-family: 'Playfair Display', serif; /* Utilise une police Serif élégante */
+  font-size: 3rem;
+  margin: 15px 0 30px 0;
+  font-weight: 400;
+}
+
+/* Grilles de cartes */
+.modal-grid-stats, .modal-grid-specs {
+  display: grid;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.modal-grid-stats { grid-template-columns: 1fr 1fr; }
+.modal-grid-specs { grid-template-columns: 1fr 1fr 1fr; }
+
+.stat-card, .spec-card, .bio-section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.stat-icon {
+  background: rgba(255, 255, 255, 0.05);
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.2rem;
+}
+
+.stat-label, .spec-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 5px;
+}
+
+.stat-value, .spec-value {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* Biographie */
+.bio-title {
+  font-weight: bold;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+}
+
+.bio-text {
+  color: #ccc;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Boutons d'action */
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.btn-main-vote {
+  background-color: #f2d06b; /* Jaune/Or de l'image */
+  color: #000;
+  border: none;
+  padding: 18px;
+  border-radius: 40px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-main-vote:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.btn-share {
+  background: transparent;
+  color: #f2d06b;
+  border: 1px solid rgba(242, 208, 107, 0.3);
+  padding: 12px;
+  border-radius: 40px;
+  font-weight: 500;
+  cursor: pointer;
+}

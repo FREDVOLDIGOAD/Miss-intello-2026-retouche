@@ -139,7 +139,7 @@ export default function App() {
     </div>
   </div>
 )}
-      )}
+      
 
       <footer>&copy; 2026 Miss Intello Final - PayGate Global Protection</footer>
     </div>
