@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
+import './App.css'; // On importe le nouveau style
 
 export default function App() {
   const [candidates, setCandidates] = useState([]);
@@ -8,16 +9,16 @@ export default function App() {
   useEffect(() => { fetchCandidates(); }, []);
 
   const fetchCandidates = async () => {
-    const { data, error } = await supabase.from('candidates').select('*').order('id');
-    if (error) console.error(error);
-    else setCandidates(data || []);
+    const { data } = await supabase.from('candidates').select('*').order('id');
+    setCandidates(data || []);
     setLoading(false);
   };
 
   const handleVote = async (cId) => {
-    const phone = prompt("Numéro Togo (8 chiffres):");
-    const net = prompt("Réseau (TMONEY ou FLOOZ):").toUpperCase();
-    const qty = prompt("Nombre de votes (200F l'unité):");
+    const phone = prompt("Numéro (8 chiffres) :");
+    const net = prompt("Réseau (TMONEY ou FLOOZ) :").toUpperCase();
+    const qty = prompt("Nombre de votes (200F l'unité) :");
+    
     if (!phone || !qty || (net !== "TMONEY" && net !== "FLOOZ")) return alert("Infos invalides");
 
     const { data, error } = await supabase.functions.invoke('paygate-init', {
@@ -25,26 +26,38 @@ export default function App() {
     });
 
     if (error) alert("Erreur: " + error.message);
-    else alert("Paiement initié ! Validez sur votre téléphone.");
+    else alert("✅ Demande envoyée ! Confirmez sur votre téléphone.");
   };
 
-  if (loading) return <p style={{textAlign:'center', marginTop:50}}>Chargement des candidates...</p>;
+  if (loading) return <div className="loading">Chargement de l'élégance...</div>;
 
   return (
-    <div style={{ padding: 20, fontFamily: 'sans-serif', textAlign: 'center', color: 'white' }}>
-      <h1>MISS INTELLO 2026</h1>
-      <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap', marginTop: 40 }}>
-        {candidates.length > 0 ? candidates.map(c => (
-          <div key={c.id} style={{ border: '1px solid #555', padding: 20, borderRadius: 15, width: 220, background: '#1a1a1a' }}>
-            <img src={c.photo_url || 'https://via.placeholder.com/150'} style={{ width: '100%', borderRadius: 10 }} />
-            <h3>{c.name}</h3>
-            <p style={{ fontSize: 24, fontWeight: 'bold', color: '#00d1b2' }}>{c.total_votes || 0} votes</p>
-            <button onClick={() => handleVote(c.id)} style={{ width: '100%', padding: 12, cursor: 'pointer', background: '#00d1b2', color: '#000', border: 'none', borderRadius: 8, fontWeight: 'bold' }}>
-              VOTER (200F)
-            </button>
+    <div className="container">
+      <header>
+        <h1 className="logo">Miss Intello 2026</h1>
+        <p style={{color: '#aaa'}}>L'intelligence est la nouvelle beauté</p>
+      </header>
+
+      <div className="grid">
+        {candidates.map(c => (
+          <div key={c.id} className="card">
+            <div className="image-container">
+              <img src={c.photo_url || 'https://via.placeholder.com/400x600'} alt={c.name} />
+            </div>
+            <div className="info">
+              <h3 className="name">{c.name}</h3>
+              <div className="vote-count">{c.total_votes || 0} <span style={{fontSize: '1rem'}}>VOTES</span></div>
+              <button className="btn-vote" onClick={() => handleVote(c.id)}>
+                VOTER POUR ELLE
+              </button>
+            </div>
           </div>
-        )) : <p>Aucune candidate trouvée dans la base de données.</p>}
+        ))}
       </div>
+
+      <footer style={{marginTop: 80, opacity: 0.5, fontSize: '0.8rem'}}>
+        &copy; 2026 Concours Miss Intello - Paiements sécurisés par PayGate Global
+      </footer>
     </div>
   );
 }
