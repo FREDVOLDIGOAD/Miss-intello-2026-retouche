@@ -134,6 +134,7 @@ export default function App() {
       </div>
 
       {/* --- MODAL DÉTAILS (Emma Style) --- */}
+
       {selectedCandidate && !showVoteModal && (
         <div className="modal-overlay" onClick={() => setSelectedCandidate(null)}>
           <div className="modal-split-card" onClick={e => e.stopPropagation()}>
