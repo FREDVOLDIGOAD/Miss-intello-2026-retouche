@@ -201,7 +201,35 @@ export default function App() {
                     <button className={voteData.network === 'FLOOZ' ? 'active' : ''} onClick={() => setVoteData({...voteData, network:'FLOOZ'})}>FLOOZ</button>
                 </div>
                 <input type="tel" placeholder="Numéro Togo (8 chiffres)" onChange={(e) => setVoteData({...voteData, phone: e.target.value})} />
-                <input type="number" placeholder="Nombre de votes"  onChange={(e) => setVoteData({...voteData, qty: e.target.value})} />
+                <label className="input-label">Nombre de votes (200 F / unité)</label>
+                <input 
+                  type="number" 
+                  min="1" 
+                  placeholder="Minimum 1"
+                  value={voteData.qty} 
+                  className={voteData.qty < 1 ? "input-field error" : "input-field"}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    // Si ce n'est pas un nombre ou si c'est inférieur à 1, on peut laisser vide 
+                    // ou mettre 0 temporairement, mais on affichera l'erreur
+                    setVoteData({...voteData, qty: isNaN(val) ? "" : val});
+                  }}
+                  /* Quand l'utilisateur clique ailleurs, on remet à 1 si c'est vide ou 0 */
+                  onBlur={() => {
+                    if (!voteData.qty || voteData.qty < 1) {
+                      setVoteData({...voteData, qty: 1});
+                    }
+                  }}
+                />
+
+                {/* Signalement visuel si le chiffre est invalide */}
+                {voteData.qty < 1 && voteData.qty !== "" && (
+                  <p className="error-message-small">⚠️ Le minimum est de 1 vote</p>
+                )}
+
+                <div className="total-box">
+                  Total à payer : <span>{((voteData.qty || 1) * 200).toLocaleString()} FCFA</span>
+                </div>
                 <div className="total-box">Total : <span>{(voteData.qty * 200).toLocaleString()} F</span></div>
                 <button className="btn-confirm-final" onClick={confirmPayment} translate="no">CONFIRMER LE PAIEMENT</button>
             </div>
