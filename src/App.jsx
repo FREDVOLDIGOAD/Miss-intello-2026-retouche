@@ -174,7 +174,7 @@ export default function App() {
                     <strong className="spec-value-luxury">{selectedCandidate.poids || '--'} kg</strong>
                   </div>
                 </div>
-                
+
                 <div className="stats-row">
                   {/* Carte Votes */}
                   <div className="mini-stat-card">
@@ -268,4 +268,57 @@ export default function App() {
       )}
     </div>
   );
+  <footer className="site-footer">
+    <div className="footer-content">
+      {/* Section 1 : Logo & Slogan */}
+      <div className="footer-section">
+        <h3 className="footer-logo">Miss Intello <span>2026</span></h3>
+        <p className="footer-description">
+          L'excellence et l'intelligence au service du leadership féminin au Togo.
+        </p>
+      </div>
+
+      {/* Section 2 : Support */}
+      <div className="footer-section">
+        <h4>Aide & Support</h4>
+        <ul className="footer-links">
+          <li><i className="fa-solid fa-phone"></i> +228 90 83 64 94</li>
+          <li><i className="fa-solid fa-envelope"></i> comitemissintello1@gmail.com</li>
+          <li><i className="fa-solid fa-location-dot"></i> Lomé, Togo</li>
+        </ul>
+      </div>
+
+      {/* Section 3 : Mentions */}
+      <div className="footer-section">
+        <h4>Mentions Légales</h4>
+        <ul className="footer-links">
+          <li>
+            <a href="#/" onClick={(e) => { e.preventDefault(); alert("Éditeur : Comité Miss Intello. Système de vote sécurisé par PayGate Global."); }}>
+              Mentions Légales
+            </a>
+          </li>
+          <li>
+            <a href="#/" onClick={(e) => { e.preventDefault(); alert("Les votes sont définitifs et non remboursables une fois confirmés."); }}>
+              CGV / CGU
+            </a>
+          </li>
+          <li>
+            <a href="#/" onClick={(e) => { e.preventDefault(); alert("Vos données de paiement sont traitées exclusivement par PayGate Global."); }}>
+              Confidentialité
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div className="footer-bottom">
+      <div className="footer-divider"></div>
+      <div className="footer-bottom-flex">
+        <p>&copy; {new Date().getFullYear()} Miss Intello Togo - Tous droits réservés.</p>
+        <div className="paygate-badge">
+          <span className="dot"></span> Paiements sécurisés par PayGate Global
+        </div>
+      </div>
+    </div>
+  </footer>
 }
