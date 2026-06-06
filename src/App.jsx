@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from './supabaseClient';
-import { motion, AnimatePresence } from 'framer-motion'; // Pour les animations
-import { Search, Trophy, Timer, Heart, Share2, Info, CheckCircle } from 'lucide-react'; // Icônes
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { Search, Trophy, Sparkles, Info, Star, ShieldCheck, Zap } from 'lucide-react';
+import confetti from 'canvas-confetti'; // Pour l'idée n°2
 import './App.css';
 
 const PRICE_PER_VOTE = 200;
-const ELECTION_DATE = new Date('2026-06-30T20:00:00').getTime();
 
 export default function App() {
   const [candidates, setCandidates] = useState([]);
@@ -13,38 +13,32 @@ export default function App() {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [showVoteModal, setShowVoteModal] = useState(false);
   const [voteData, setVoteData] = useState({ qty: 1, phone: '', network: 'TMONEY' });
-  const [searchTerm, setSearchQuery] = useState("");
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
+  const [oracleQuery, setOracleQuery] = useState("");
+  
+  // Réf pour l'effet de tapis rouge 3D
+  const containerRef = useRef(null);
 
   useEffect(() => {
     fetchCandidates();
-    
-    // --- TEMPS RÉEL SUPABASE ---
+
+    // --- IDÉE N°2 : LE COEUR DE LA NATION (REALTIME EXPLOSION) ---
     const channel = supabase
-      .channel('schema-db-changes')
+      .channel('global-votes')
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'candidates' }, (payload) => {
-        setCandidates(current => 
-          current.map(c => c.id === payload.new.id ? { ...c, total_votes: payload.new.total_votes } : c)
-        );
+        // Mise à jour live
+        setCandidates(prev => prev.map(c => c.id === payload.new.id ? { ...c, total_votes: payload.new.total_votes } : c));
+        
+        // EXPLOSION D'OR GLOBALE
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#d4af37', '#ffffff', '#6b21a8']
+        });
       })
       .subscribe();
 
-    // --- COMPTE À REBOURS ---
-    const timer = setInterval(() => {
-      const now = new Date().getTime();
-      const diff = ELECTION_DATE - now;
-      setTimeLeft({
-        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-        mins: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
-        secs: Math.floor((diff % (1000 * 60)) / 1000)
-      });
-    }, 1000);
-
-    return () => {
-      supabase.removeChannel(channel);
-      clearInterval(timer);
-    };
+    return () => supabase.removeChannel(channel);
   }, []);
 
   const fetchCandidates = async () => {
@@ -53,109 +47,106 @@ export default function App() {
     setLoading(false);
   };
 
-  // --- LOGIQUE DE FILTRE ET CLASSEMENT ---
+  // --- IDÉE N°4 : L'ORACLE (FILTRE INTELLIGENT) ---
   const filteredCandidates = useMemo(() => {
-    return candidates.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [candidates, searchTerm]);
+    return candidates.filter(c => 
+      c.name.toLowerCase().includes(oracleQuery.toLowerCase()) || 
+      (c.tags && c.tags.toLowerCase().includes(oracleQuery.toLowerCase()))
+    );
+  }, [candidates, oracleQuery]);
 
-  const top3 = useMemo(() => candidates.slice(0, 3), [candidates]);
-
-  // (Garder les fonctions handleVoteClick, confirmPayment et handleShare que tu as déjà)
   const handleVoteClick = (candidate) => { setSelectedCandidate(candidate); setShowVoteModal(true); };
-  
-  const handleShare = async (c) => {
-    try { await navigator.share({ title: `Votez pour ${c.name}`, url: window.location.href }); } 
-    catch { navigator.clipboard.writeText(window.location.href); alert("Lien copié !"); }
-  };
 
   const confirmPayment = async () => {
-    const { qty, phone, network } = voteData;
-    if (phone.length < 8) return alert("Numéro invalide");
     try {
-      const { data, error } = await supabase.functions.invoke('paygate-init', {
-        body: { candidateId: selectedCandidate.id, phoneNumber: phone, network, amount: qty * PRICE_PER_VOTE }
+      const { error } = await supabase.functions.invoke('paygate-init', {
+        body: { candidateId: selectedCandidate.id, phoneNumber: voteData.phone, network: voteData.network, amount: voteData.qty * PRICE_PER_VOTE }
       });
       if (error) throw error;
-      alert("✅ Demande envoyée ! Tapez votre code PIN.");
+      alert("Demande envoyée !");
       setShowVoteModal(false);
-    } catch (err) { alert("Erreur : " + err.message); }
+    } catch (e) { alert(e.message); }
   };
 
-  if (loading) return <div className="loading-screen"><div className="loader"></div></div>;
+  if (loading) return <div className="cosmic-loader"><div className="sun"></div></div>;
 
   return (
-    <div className="app-wrapper">
-      <div className="glow-bg"></div>
+    <div className="olympus-root">
+      {/* --- IDÉE N°1 : L'OLYMPE (FOND SPATIAL ANIMÉ) --- */}
+      <div className="nebula-bg"></div>
+      <div className="stars-layer"></div>
 
       <div className="container">
-        {/* --- HEADER --- */}
-        <header className="main-header">
-          <motion.h1 initial={{y:-20}} animate={{y:0}} className="logo">Miss Intello <span>2026</span></motion.h1>
-          <p className="subtitle">L'intelligence est la nouvelle beauté</p>
+        <header className="cosmic-header">
+          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="crown-icon">
+            <Trophy size={50} color="#d4af37" />
+          </motion.div>
+          <h1 className="main-title">Miss Intello <span>2026</span></h1>
+          <p className="glitch-text">Édition Grandiose</p>
         </header>
 
-        {/* --- SECTION COMPTE À REBOURS --- */}
-        <section className="countdown-box">
-          <div className="timer-item"><span>{timeLeft.days}</span><label>Jours</label></div>
-          <div className="timer-item"><span>{timeLeft.hours}</span><label>Heures</label></div>
-          <div className="timer-item"><span>{timeLeft.mins}</span><label>Mins</label></div>
-          <div className="timer-item"><span>{timeLeft.secs}</span><label>Secs</label></div>
-        </section>
-
-        {/* --- SECTION PODIUM (TOP 3) --- */}
-        <section className="podium-section">
-          <h2 className="section-title"><Trophy size={20} color="var(--primary-gold)"/> Le Podium de l'Excellence</h2>
-          <div className="podium-grid">
-            {top3.map((c, index) => (
-              <motion.div key={c.id} whileHover={{scale:1.05}} className={`podium-card rank-${index + 1}`}>
-                <div className="rank-badge">{index + 1}</div>
-                <img src={c.photo_url} alt={c.name} />
-                <h4>{c.name}</h4>
-                <p>{c.total_votes} votes</p>
-              </motion.div>
-            ))}
+        {/* --- L'ORACLE --- */}
+        <div className="oracle-container">
+          <div className="oracle-box">
+            <Sparkles className="oracle-icon" />
+            <input 
+              placeholder="Demandez à l'Oracle (ex: Leadership, Éducation...)" 
+              onChange={(e) => setOracleQuery(e.target.value)}
+            />
           </div>
-        </section>
-
-        {/* --- BARRE DE RECHERCHE --- */}
-        <div className="search-bar">
-          <Search size={20} color="#888"/>
-          <input 
-            type="text" 
-            placeholder="Rechercher une candidate..." 
-            value={searchTerm}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
         </div>
 
-        {/* --- SECTION "POURQUOI VOTER" --- */}
-        <section className="why-vote">
-            <div className="info-card"><Heart color="var(--primary-gold)"/><h3>Soutenir</h3><p>Aidez-la à réaliser son projet social.</p></div>
-            <div className="info-card"><CheckCircle color="var(--primary-gold)"/><h3>Décider</h3><p>Votre voix compte pour le jury final.</p></div>
-            <div className="info-card"><Share2 color="var(--primary-gold)"/><h3>Partager</h3><p>Faites rayonner son talent au Togo.</p></div>
-        </section>
-
-        {/* --- GRILLE PRINCIPALE --- */}
-        <div className="grid">
-          {filteredCandidates.map(c => (
-            <motion.div layout key={c.id} className="card">
-              <div className="image-container" onClick={() => setSelectedCandidate(c)}>
-                <img src={c.photo_url || 'https://via.placeholder.com/400'} alt={c.name} />
-                <div className="overlay-info"><Info size={24}/></div>
-              </div>
-              <div className="info">
-                <h3 className="name" translate="no">{c.name}</h3>
-                <div className="vote-count">{c.total_votes} <span>VOTES</span></div>
-                <button className="btn-vote" onClick={() => handleVoteClick(c)}>VOTER MAINTENANT</button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        {/* --- IDÉE N°3 : LE TAPIS ROUGE VIRTUEL (SCROLL 3D) --- */}
+        <motion.div 
+          className="virtual-red-carpet"
+          ref={containerRef}
+          initial="hidden"
+          whileInView="visible"
+        >
+          <div className="grid-3d">
+            {filteredCandidates.map((c, index) => {
+              // Calcul de l'AURA (Plus elle a de votes, plus elle brille)
+              const auraStrength = Math.min((c.total_votes || 0) / 100, 1);
+              
+              return (
+                <motion.div 
+                  key={c.id}
+                  className="card-3d"
+                  whileHover={{ rotateY: 10, rotateX: -5, scale: 1.05 }}
+                  style={{ 
+                    boxShadow: `0 0 ${40 * auraStrength}px rgba(212, 175, 55, ${0.4 * auraStrength})`,
+                    borderColor: auraStrength > 0.5 ? 'var(--primary-gold)' : 'var(--glass-border)'
+                  }}
+                >
+                  <div className="image-wrapper" onClick={() => setSelectedCandidate(c)}>
+                    <img src={c.photo_url} alt={c.name} />
+                    <div className="aura-effect" style={{ opacity: auraStrength }}></div>
+                  </div>
+                  <div className="card-content">
+                    <h3 translate="no">{c.name}</h3>
+                    <div className="vote-badge">
+                      <Zap size={14} /> {c.total_votes || 0} VOIX
+                    </div>
+                    <button className="btn-olympus" onClick={() => handleVoteClick(c)}>VOTER</button>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
       </div>
 
-      {/* --- MODALES (On garde les mêmes mais avec le CSS amélioré) --- */}
-      {/* ... (Inclus les modales Details et Paiement ici) ... */}
+      {/* FOOTER MENTIONS LÉGALES */}
+      <footer className="cosmic-footer">
+        <div className="footer-line"></div>
+        <p>© 2026 Miss Intello Final - Sécurité de vote certifiée par PayGate Global</p>
+        <div className="legal-links">
+          <span onClick={() => alert("Votes non remboursables.")}>CGV</span> • 
+          <span onClick={() => alert("Données chiffrées.")}>Confidentialité</span>
+        </div>
+      </footer>
 
+      {/* ... (Garder tes modales détails et paiement ici) ... */}
     </div>
   );
 }
