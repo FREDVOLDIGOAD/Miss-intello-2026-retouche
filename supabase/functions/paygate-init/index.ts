@@ -25,17 +25,23 @@ serve(async (req) => {
         description: "Vote Miss Intello"
       }),
     });
-
     const data = await response.json();
     if (String(data.status) !== "0") throw new Error(data.message);
 
+
+    // On enregistre dans la table avec les nouveaux noms de colonnes
     await supabase.from('transactions').insert({
       id: internalId,
       candidate_id: candidateId,
       amount: Number(amount),
       vote_count: Number(amount) / 200,
+      details: `Vote Miss Intello - Candidate #${candidateId}`,
+      service: network.toUpperCase(),
+      status: 'En attente', // Etat initial
+      phone_number: phoneNumber,
       transaction_ref: data.tx_reference
     });
+
 
     return new Response(JSON.stringify({ success: true, identifier: internalId }), { headers: corsHeaders });
   } catch (err) {
