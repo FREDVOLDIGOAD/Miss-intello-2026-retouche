@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import { motion, AnimatePresence } from 'framer-motion';
+import { CheckSquare, Banknote, BookOpen, Heart, X } from 'lucide-react'; // Import des icônes exactes
 import { Heart, MessageSquare, Share2, X, Trophy, Timer, Info } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import './App.css';
@@ -134,61 +135,76 @@ export default function App() {
       </div>
 
       {/* --- MODAL DÉTAILS (Emma Style) --- */}
-      {/* --- MODAL DÉTAILS (STYLE EXACT SELON TON IMAGE) --- */}
-      <AnimatePresence>
-        {selectedCandidate && !showVoteModal && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }} 
-            className="details-overlay" 
-            onClick={() => setSelectedCandidate(null)}
-          >
-            <motion.div 
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              className="details-modal-box" 
-              onClick={e => e.stopPropagation()}
-            >
-              {/* Bouton Fermer */}
-              <button className="details-close" onClick={() => setSelectedCandidate(null)}>
-                <X size={24} />
-              </button>
 
-              <div className="details-grid-container">
-                {/* CÔTÉ GAUCHE : IMAGE */}
-                <div className="details-image-side">
+      // ... dans ton return, là où tu affiches la modal détails :
+      {selectedCandidate && !showVoteModal && (
+        <div className="modal-overlay" onClick={() => setSelectedCandidate(null)}>
+          <div className="modal-split-card" onClick={e => e.stopPropagation()}>
+            {/* Bouton Fermer */}
+            <button className="close-details" onClick={() => setSelectedCandidate(null)}>
+              <X size={24} />
+            </button>
+
+            <div className="split-container">
+              {/* --- CÔTÉ GAUCHE : PHOTO --- */}
+              <div className="split-left">
+                <div className="candidate-image-frame">
                   <img src={selectedCandidate.photo_url} alt={selectedCandidate.name} />
                 </div>
-
-                {/* CÔTÉ DROIT : INFOS */}
-                <div className="details-text-side">
-                  <h2 className="details-title-name" translate="no">{selectedCandidate.name}</h2>
-                  
-                  <div className="details-specs-row">
-                    <p>Âge : <span>{selectedCandidate.age || '--'} ans</span></p>
-                    <p>Taille : <span>{selectedCandidate.taille || '--'}</span></p>
-                    <p>Poids : <span>{selectedCandidate.poids || '--'}</span></p>
-                  </div>
-
-                  <div className="details-bio-section">
-                    <h3><span role="img" aria-label="bio">📖</span> Biographie</h3>
-                    <p>{selectedCandidate.biography || "Biographie en cours de rédaction..."}</p>
-                  </div>
-
-                  <button 
-                    className="details-vote-btn-gold" 
-                    onClick={() => handleVoteClick(selectedCandidate)}
-                    translate="no"
-                  >
-                    VOTER POUR ELLE
-                  </button>
-                </div>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+              {/* --- CÔTÉ DROIT : INFORMATIONS --- */}
+              <div className="split-right">
+                <span className="badge-miss-gold">MISS</span>
+                <h2 className="candidate-title-main">
+                  Candidate n<sup>o</sup>{selectedCandidate.candidate_number || selectedCandidate.id}
+                </h2>
+
+                <div className="stats-row">
+                  {/* Carte Votes */}
+                  <div className="mini-stat-card">
+                    <div className="stat-icon-bg">
+                      <CheckSquare size={20} color="#f2d06b" />
+                    </div>
+                    <div className="stat-text-content">
+                      <span className="stat-label">Votes</span>
+                      <span className="stat-value">{selectedCandidate.total_votes || 0}</span>
+                    </div>
+                  </div>
+
+                  {/* Carte Montant */}
+                  <div className="mini-stat-card">
+                    <div className="stat-icon-bg">
+                      <Banknote size={20} color="#f2d06b" />
+                    </div>
+                    <div className="stat-text-content">
+                      <span className="stat-label">Montant / vote</span>
+                      <span className="stat-value">200 FCFA</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section Biographie */}
+                <div className="bio-card-large">
+                  <div className="bio-header">
+                    <BookOpen size={22} color="#f2d06b" />
+                    <span>Biographie</span>
+                  </div>
+                  <p className="bio-content-text">
+                    {selectedCandidate.biography || "Cette candidate n'a pas encore renseigné sa biographie."}
+                  </p>
+                </div>
+
+                {/* Bouton de Vote final */}
+                <button className="btn-vote-now-gold" onClick={() => handleVoteClick(selectedCandidate)}>
+                  <Heart size={20} fill="currentColor" />
+                  Voter pour {selectedCandidate.name}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* --- MODAL PAIEMENT --- */}
       {showVoteModal && (
