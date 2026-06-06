@@ -70,7 +70,6 @@ export default function App() {
       if (data.success || data.paymentInitiated) {
         alert("✅ Demande envoyée ! Veuillez confirmer la transaction sur votre téléphone en tapant votre code PIN.");
         setShowVoteModal(false);
-        // On ne ferme pas forcément selectedCandidate pour que l'utilisateur reste là où il était
         setVoteData({ qty: 1, phone: '', network: 'TMONEY' }); 
       }
     } catch (err) {
@@ -100,48 +99,47 @@ export default function App() {
 
   return (
     <div className="container">
-      {!selectedCandidate || showVoteModal ? (
-        <>
-          <header>
-            <h1 className="logo">Miss Intello 2026</h1>
-            <p className="subtitle">L'intelligence est la nouvelle beauté</p>
-          </header>
+      {/* HEADER (Toujours visible si pas de candidate sélectionnée) */}
+      {!selectedCandidate && (
+        <header>
+          <h1 className="logo">Miss Intello 2026</h1>
+          <p className="subtitle">L'intelligence est la nouvelle beauté</p>
+        </header>
+      )}
 
-          <div className="grid">
-            {candidates.map(c => (
-              <div key={c.id} className="card">
-                <div className="image-container">
-                  <img src={c.photo_url || 'https://via.placeholder.com/400x600'} alt={c.name} />
-                </div>
-                <div className="info">
-                  <h3 className="name">{c.name}</h3>
-                  <div className="vote-count">{c.total_votes || 0} <span>VOTES</span></div>
-                  
-                  <button className="btn-vote" onClick={() => handleVoteClick(c)}>VOTER MAINTENANT</button>
-                  
-                  <div className="btn-group">
-                    <button className="btn-secondary" onClick={() => setSelectedCandidate(c)}>Détails</button>
-                    <button className="btn-secondary" onClick={() => handleShare(c)}>Partager</button>
-                  </div>
+      {/* GRILLE DES CANDIDATES (Visible seulement si aucune sélectionnée) */}
+      {!selectedCandidate ? (
+        <div className="grid">
+          {candidates.map(c => (
+            <div key={c.id} className="card">
+              <div className="image-container">
+                <img src={c.photo_url || 'https://via.placeholder.com/400x600'} alt={c.name} />
+              </div>
+              <div className="info">
+                <h3 className="name">{c.name}</h3>
+                <div className="vote-count">{c.total_votes || 0} <span>VOTES</span></div>
+                
+                <button className="btn-vote" onClick={() => handleVoteClick(c)}>VOTER MAINTENANT</button>
+                
+                <div className="btn-group">
+                  <button className="btn-secondary" onClick={() => setSelectedCandidate(c)}>Détails</button>
+                  <button className="btn-secondary" onClick={() => handleShare(c)}>Partager</button>
                 </div>
               </div>
-            ))}
-          </div>
-        </>
+            </div>
+          ))}
+        </div>
       ) : (
-        {/* VUE DÉTAILLÉE (MODAL DÉTAILS AVEC PHOTO ET PARTAGE) */}
-      {selectedCandidate && !showVoteModal && (
-        <div className="modal-overlay" onClick={() => setSelectedCandidate(null)}>
+        /* VUE DÉTAILLÉE (Split view Photo + Infos) */
+        <div className="modal-overlay detail-view-active" onClick={() => setSelectedCandidate(null)}>
           <div className="modal-content modal-detail-full" onClick={e => e.stopPropagation()}>
             <button className="close-modal" onClick={() => setSelectedCandidate(null)}>&times;</button>
             
             <div className="modal-split">
-              {/* CÔTÉ GAUCHE : LA PHOTO */}
               <div className="modal-photo-side">
                 <img src={selectedCandidate.photo_url || 'https://via.placeholder.com/400x600'} alt={selectedCandidate.name} />
               </div>
 
-              {/* CÔTÉ DROIT : LES INFOS */}
               <div className="modal-info-side">
                 <span className="badge-miss">MISS INTELLO 2026</span>
                 <h2 className="modal-name">{selectedCandidate.name}</h2>
@@ -176,7 +174,7 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL DE PAIEMENT (Toujours au dessus) */}
+      {/* MODAL DE PAIEMENT (S'affiche par dessus tout) */}
       {showVoteModal && (
         <div className="payment-overlay" onClick={() => !isProcessing && setShowVoteModal(false)}>
           <div className="payment-modal" onClick={e => e.stopPropagation()}>
@@ -232,6 +230,7 @@ export default function App() {
         </div>
       )}
 
+      {/* FOOTER */}
       <footer className="site-footer">
         <div className="footer-content">
           <div className="footer-section">
@@ -243,7 +242,7 @@ export default function App() {
             <h4>Aide & Support</h4>
             <ul>
               <li><i className="fa-solid fa-phone"></i> +228 90 83 64 94</li>
-              <li><i className="fa-solid fa-envelope"></i> comitemissintello1@gmail.com</li>
+              <li><i className="fa-solid fa-envelope"></i> contact@missintello.tg</li>
               <li>Lomé, Togo</li>
             </ul>
           </div>
