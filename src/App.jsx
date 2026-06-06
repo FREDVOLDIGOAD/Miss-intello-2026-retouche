@@ -201,7 +201,7 @@ export default function App() {
                     <button className={voteData.network === 'FLOOZ' ? 'active' : ''} onClick={() => setVoteData({...voteData, network:'FLOOZ'})}>FLOOZ</button>
                 </div>
                 <input type="tel" placeholder="Numéro Togo (8 chiffres)" onChange={(e) => setVoteData({...voteData, phone: e.target.value})} />
-                <input type="number" min="1" value={voteData.qty} onChange={(e) => setVoteData({...voteData, qty: e.target.value})} />
+                <input type="number" placeholder="Nombre de votes" min="1" value={voteData.qty} onChange={(e) => setVoteData({...voteData, qty: e.target.value})} />
                 <div className="total-box">Total : <span>{(voteData.qty * 200).toLocaleString()} F</span></div>
                 <button className="btn-confirm-final" onClick={confirmPayment} translate="no">CONFIRMER LE PAIEMENT</button>
             </div>
