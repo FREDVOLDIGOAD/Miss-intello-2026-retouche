@@ -119,7 +119,7 @@ export default function App() {
                 <h3 className="name">{c.name}</h3>
                 <div className="vote-count">{c.total_votes || 0} <span>VOTES</span></div>
                 
-                <button className="btn-vote" onClick={() => handleVoteClick(c)}>VOTER MAINTENANT</button>
+                <button className="btn-vote" onClick={() => handleVoteClick(c)} translate="no">VOTER MAINTENANT</button>
                 
                 <div className="btn-group">
                   <button className="btn-secondary" onClick={() => setSelectedCandidate(c)}>Détails</button>
