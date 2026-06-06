@@ -525,7 +525,7 @@ input { width: 100%; padding: 15px; margin-bottom: 15px; background: #000; borde
 .paygate-badge .dot {
   width: 6px;
   height: 6px;
-  background: var(--primary-gold);
+  background: #f2d06b;
   border-radius: 50%;
   display: inline-block;
   box-shadow: 0 0 10px var(--primary-gold);
