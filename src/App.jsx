@@ -157,7 +157,24 @@ export default function App() {
                 <h2 className="candidate-title-main">
                   Candidate n<sup>o</sup>{selectedCandidate.candidate_number || selectedCandidate.id}
                 </h2>
+                {/* --- NOUVEAU BLOC CARACTÉRISTIQUES (ÂGE, TAILLE, POIDS) --- */}
+                <div className="specs-container-luxury">
+                  <div className="spec-box-luxury">
+                    <span className="spec-label-luxury">ÂGE</span>
+                    <strong className="spec-value-luxury">{selectedCandidate.age || '--'} ans</strong>
+                  </div>
+                  
+                  <div className="spec-box-luxury">
+                    <span className="spec-label-luxury">TAILLE</span>
+                    <strong className="spec-value-luxury">{selectedCandidate.taille || '--'} m</strong>
+                  </div>
 
+                  <div className="spec-box-luxury">
+                    <span className="spec-label-luxury">POIDS</span>
+                    <strong className="spec-value-luxury">{selectedCandidate.poids || '--'} kg</strong>
+                  </div>
+                </div>
+                
                 <div className="stats-row">
                   {/* Carte Votes */}
                   <div className="mini-stat-card">

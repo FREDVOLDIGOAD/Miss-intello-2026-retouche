@@ -342,3 +342,52 @@ input { width: 100%; padding: 15px; margin-bottom: 15px; background: #000; borde
   color: white; cursor: pointer;
   z-index: 10;
 }
+/* --- STYLE CARACTÉRISTIQUES LUXE (ÂGE, TAILLE, POIDS) --- */
+
+.specs-container-luxury {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* 3 colonnes égales */
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.spec-box-luxury {
+  background: rgba(255, 255, 255, 0.03); /* Fond sombre transparent */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Bordure très fine */
+  border-radius: 20px; /* Bords très arrondis comme sur l'image */
+  padding: 20px 10px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.spec-box-luxury:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--primary-gold);
+}
+
+.spec-label-luxury {
+  display: block;
+  font-size: 0.7rem;
+  color: #888; /* Gris pour le label */
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.spec-value-luxury {
+  display: block;
+  font-size: 1.3rem; /* Gros texte pour la valeur */
+  font-weight: 800;
+  color: white;
+}
+
+/* Ajustement mobile : si l'écran est petit, on les empile ou on réduit la taille */
+@media (max-width: 480px) {
+  .specs-container-luxury {
+    gap: 10px;
+  }
+  .spec-value-luxury {
+    font-size: 1rem;
+  }
+}
