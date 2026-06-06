@@ -106,41 +106,42 @@ export default function App() {
 
         {/* --- SECTION GRILLE CANDIDATES (IMAGE 2) --- */}
         <div key={c.id} className="candidate-main-card" onClick={() => setSelectedCandidate(c)}>
-        <div className="card-img-wrapper">
-          <img src={c.photo_url} alt={c.name} onError={(e) => e.target.src='https://via.placeholder.com/400x600?text=Photo'} />
-        </div>
-        
-        <div className="card-body">
-          {/* Ligne du haut : MISS et le badge des VOTES */}
-          <div className="card-header-meta">
-            <span className="miss-label">MISS</span>
-            <div className="votes-pill-badge">
-              <CheckSquare size={14} color="#f2d06b" />
-              <span>{c.total_votes || 0} votes</span>
-            </div>
+          <div className="card-img-wrapper">
+            <img src={c.photo_url} alt={c.name} onError={(e) => e.target.src='https://via.placeholder.com/400x600?text=Photo'} />
           </div>
-
-          {/* Titre : Candidate n°X */}
-          <h3 className="card-title-serif" translate="no">
-            Candidate n°{c.candidate_number}
-          </h3>
-
-          {/* Liste des détails techniques */}
-          <div className="card-specs-list">
-            <p>Candidate N° : <span>{c.candidate_number}</span></p>
-            <p>Âge : <span>{c.age || '--'} ans</span></p>
-            <p>Taille : <span>{c.taille || '--'}</span></p>
-            <p>Poids : <span>{c.poids || '--'}</span></p>
-          </div>
-
-          {/* Boutons d'action en bas */}
-          <button className="btn-vote-gold-small" onClick={(e) => { e.stopPropagation(); handleVoteClick(c); }} translate="no">
-            VOTER
-          </button>
           
-          <div className="card-footer-links">
-              <button className="link-action">Détails</button>
-              <button className="link-action">Partager</button>
+          <div className="card-body">
+            {/* Ligne du haut : MISS et le badge des VOTES */}
+            <div className="card-header-meta">
+              <span className="miss-label">MISS</span>
+              <div className="votes-pill-badge">
+                <CheckSquare size={14} color="#f2d06b" />
+                <span>{c.total_votes || 0} votes</span>
+              </div>
+            </div>
+
+            {/* Titre : Candidate n°X */}
+            <h3 className="card-title-serif" translate="no">
+              Candidate n°{c.candidate_number}
+            </h3>
+
+            {/* Liste des détails techniques */}
+            <div className="card-specs-list">
+              <p>Candidate N° : <span>{c.candidate_number}</span></p>
+              <p>Âge : <span>{c.age || '--'} ans</span></p>
+              <p>Taille : <span>{c.taille || '--'}</span></p>
+              <p>Poids : <span>{c.poids || '--'}</span></p>
+            </div>
+
+            {/* Boutons d'action en bas */}
+            <button className="btn-vote-gold-small" onClick={(e) => { e.stopPropagation(); handleVoteClick(c); }} translate="no">
+              VOTER
+            </button>
+            
+            <div className="card-footer-links">
+                <button className="link-action">Détails</button>
+                <button className="link-action">Partager</button>
+            </div>
           </div>
         </div>
       </div>
