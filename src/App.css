@@ -1,173 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600;800&display=swap');
+
 :root {
-  --gold-primary: #e3c08d; /* Or sablé comme l'image */
-  --gold-dark: #b89a64;
-  --bg-black: #050505;
-  --card-gray: #111111;
+  --primary-gold: #d4af37;
+  --light-gold: #f2d06b;
+  --deep-purple: #0f0a1e;
+  --midnight-violet: #1a0b2e;
+  --glass-purple: rgba(30, 15, 60, 0.4);
+  --glass-border: rgba(212, 175, 55, 0.2);
 }
 
 body {
-  background-color: var(--bg-black);
+  background: radial-gradient(circle at top right, var(--midnight-violet), #050505);
+  background-attachment: fixed;
   color: white;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Poppins', sans-serif;
   margin: 0;
 }
 
 .container {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
-/* --- HERO --- */
+/* --- HERO SECTION --- */
 .hero-banner {
   display: flex;
   align-items: center;
   height: 90vh;
-  background: linear-gradient(to right, black 40%, transparent);
+  background: linear-gradient(to right, var(--deep-purple) 30%, transparent 80%);
   position: relative;
   overflow: hidden;
-}
-
-.hero-content {
-  padding-left: 10%;
-  z-index: 2;
-  max-width: 500px;
+  padding: 0 5%;
 }
 
 .hero-content h1 {
   font-family: 'Playfair Display', serif;
-  font-size: 4rem;
-  line-height: 1.1;
-  margin-bottom: 20px;
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  line-height: 1;
+  margin: 15px 0;
+  background: linear-gradient(to right, #fff, var(--primary-gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.hero-content p {
-  font-size: 1.1rem;
-  color: #ccc;
-  margin-bottom: 30px;
+.badge-gold {
+  color: var(--primary-gold);
+  letter-spacing: 4px;
+  font-weight: 800;
+  font-size: 0.8rem;
 }
 
 .hero-image {
   position: absolute;
-  right: 0; top: 0;
+  right: -5%; top: 0;
   width: 60%; height: 100%;
-  z-index: 1;
+  z-index: -1;
+  mask-image: linear-gradient(to left, black 70%, transparent 100%);
 }
 
-.hero-image img {
-  width: 100%; height: 100%; object-fit: cover;
-}
+.hero-image img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- BOUTONS --- */
-.btn-outline {
-  border: 1px solid white;
-  color: white;
-  padding: 15px 40px;
+.btn-hero-gold {
+  display: inline-block;
+  border: 1px solid var(--primary-gold);
+  color: var(--primary-gold);
+  padding: 15px 35px;
   text-decoration: none;
   font-weight: bold;
   letter-spacing: 2px;
+  margin-top: 20px;
   transition: 0.3s;
 }
 
-.btn-outline:hover {
-  background: white; color: black;
-}
+.btn-hero-gold:hover { background: var(--primary-gold); color: black; }
 
-/* --- SECTION TITRES --- */
+/* --- SECTION VEDETTE --- */
 .section-title {
   font-family: 'Playfair Display', serif;
   font-size: 1.8rem;
-  margin: 60px 0 30px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
+  margin: 80px 0 40px;
+  color: var(--primary-gold);
+  text-align: center;
+  letter-spacing: 3px;
 }
 
-/* --- VEDETTE --- */
 .vedette-card {
   display: flex;
-  background: var(--card-gray);
-  border-radius: 10px;
+  background: var(--glass-purple);
+  backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border);
+  border-radius: 30px;
   overflow: hidden;
   align-items: center;
-  gap: 40px;
+  gap: 50px;
 }
 
-.vedette-card img {
-  width: 50%; height: 400px; object-fit: cover;
-}
+.vedette-img-container { width: 45%; height: 500px; }
+.vedette-img-container img { width: 100%; height: 100%; object-fit: cover; }
 
-.vedette-info h3 {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
-  margin: 0;
-}
-
-.btn-outline-small {
-  background: transparent;
-  border: 1px solid #333;
-  color: white;
-  padding: 10px 30px;
-  cursor: pointer;
-  margin-top: 20px;
-}
+.vedette-info h3 { font-family: 'Playfair Display', serif; font-size: 3rem; margin: 10px 0; }
+.rank-tag { color: var(--light-gold); font-weight: bold; font-size: 0.9rem; }
 
 /* --- GRILLE --- */
 .candidates-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 30px;
   margin-bottom: 100px;
 }
 
 .mini-card {
-  background: var(--card-gray);
-  border-radius: 8px;
+  background: var(--glass-purple);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
   overflow: hidden;
-  transition: 0.3s;
+  transition: 0.4s ease;
 }
 
-.mini-img-container {
-  height: 300px;
-}
+.mini-card:hover { transform: translateY(-10px); border-color: var(--primary-gold); }
 
-.mini-img-container img {
-  width: 100%; height: 100%; object-fit: cover;
-}
+.mini-img-container { height: 350px; }
+.mini-img-container img { width: 100%; height: 100%; object-fit: cover; }
 
-.mini-info {
-  padding: 15px;
-}
+.mini-info { padding: 20px; text-align: center; }
+.mini-info h4 { font-family: 'Playfair Display', serif; font-size: 1.6rem; margin: 0; }
 
-.mini-info h4 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.4rem;
-  margin: 0 0 5px;
-}
-
-.mini-info p {
-  font-size: 0.85rem; color: #888; margin: 2px 0;
-}
-
-.votes-count {
-  font-weight: bold; color: white !important; margin-top: 10px !important;
-}
-
-.btn-gold-vote {
+.btn-card-vote {
   width: 100%;
-  background: var(--gold-primary);
+  background: linear-gradient(45deg, var(--primary-gold), var(--light-gold));
+  color: #000;
   border: none;
-  padding: 12px;
+  padding: 14px;
   margin-top: 15px;
-  font-weight: bold;
+  font-weight: 900;
+  border-radius: 10px;
   cursor: pointer;
-  border-radius: 4px;
 }
 
-/* --- MODAL PAIEMENT --- */
+/* --- MODAL PAIEMENT VIOLET --- */
 .payment-modal {
-    background: #111;
-    border: 1px solid var(--gold-primary);
-    padding: 30px;
-    border-radius: 15px;
-    width: 100%; max-width: 400px;
+    background: var(--midnight-violet);
+    border: 1px solid var(--primary-gold);
+    box-shadow: 0 0 50px rgba(107, 33, 168, 0.5);
+}
+
+.btn-confirm-final {
+    background: var(--primary-gold);
+    width: 100%; padding: 18px; border: none; border-radius: 50px;
+    font-weight: 800; margin-top: 20px; cursor: pointer;
 }
