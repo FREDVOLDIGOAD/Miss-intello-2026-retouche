@@ -135,75 +135,76 @@ export default function App() {
       </div>
 
       {/* --- MODAL DÉTAILS (Emma Style) --- */}
-      {selectedCandidate && !showVoteModal && (
-        <div className="modal-overlay" onClick={() => setSelectedCandidate(null)}>
-          <div className="modal-split-card" onClick={e => e.stopPropagation()}>
-            {/* Bouton Fermer */}
-            <button className="close-details" onClick={() => setSelectedCandidate(null)}>
-              <X size={24} />
-            </button>
+      <animatePresence> 
+        {selectedCandidate && !showVoteModal && (
+          <div className="modal-overlay" onClick={() => setSelectedCandidate(null)}>
+            <div className="modal-split-card" onClick={e => e.stopPropagation()}>
+              {/* Bouton Fermer */}
+              <button className="close-details" onClick={() => setSelectedCandidate(null)}>
+                <X size={24} />
+              </button>
 
-            <div className="split-container">
-              {/* --- CÔTÉ GAUCHE : PHOTO --- */}
-              <div className="split-left">
-                <div className="candidate-image-frame">
-                  <img src={selectedCandidate.photo_url} alt={selectedCandidate.name} />
-                </div>
-              </div>
-
-              {/* --- CÔTÉ DROIT : INFORMATIONS --- */}
-              <div className="split-right">
-                <span className="badge-miss-gold">MISS</span>
-                <h2 className="candidate-title-main">
-                  Candidate n<sup>o</sup>{selectedCandidate.candidate_number || selectedCandidate.id}
-                </h2>
-
-                <div className="stats-row">
-                  {/* Carte Votes */}
-                  <div className="mini-stat-card">
-                    <div className="stat-icon-bg">
-                      <CheckSquare size={20} color="#f2d06b" />
-                    </div>
-                    <div className="stat-text-content">
-                      <span className="stat-label">Votes</span>
-                      <span className="stat-value">{selectedCandidate.total_votes || 0}</span>
-                    </div>
-                  </div>
-
-                  {/* Carte Montant */}
-                  <div className="mini-stat-card">
-                    <div className="stat-icon-bg">
-                      <Banknote size={20} color="#f2d06b" />
-                    </div>
-                    <div className="stat-text-content">
-                      <span className="stat-label">Montant / vote</span>
-                      <span className="stat-value">200 FCFA</span>
-                    </div>
+              <div className="split-container">
+                {/* --- CÔTÉ GAUCHE : PHOTO --- */}
+                <div className="split-left">
+                  <div className="candidate-image-frame">
+                    <img src={selectedCandidate.photo_url} alt={selectedCandidate.name} />
                   </div>
                 </div>
 
-                {/* Section Biographie */}
-                <div className="bio-card-large">
-                  <div className="bio-header">
-                    <BookOpen size={22} color="#f2d06b" />
-                    <span>Biographie</span>
-                  </div>
-                  <p className="bio-content-text">
-                    {selectedCandidate.biography || "Cette candidate n'a pas encore renseigné sa biographie."}
-                  </p>
-                </div>
+                {/* --- CÔTÉ DROIT : INFORMATIONS --- */}
+                <div className="split-right">
+                  <span className="badge-miss-gold">MISS</span>
+                  <h2 className="candidate-title-main">
+                    Candidate n<sup>o</sup>{selectedCandidate.candidate_number || selectedCandidate.id}
+                  </h2>
 
-                {/* Bouton de Vote final */}
-                <button className="btn-vote-now-gold" onClick={() => handleVoteClick(selectedCandidate)}>
-                  <Heart size={20} fill="currentColor" />
-                  Voter pour {selectedCandidate.name}
-                </button>
+                  <div className="stats-row">
+                    {/* Carte Votes */}
+                    <div className="mini-stat-card">
+                      <div className="stat-icon-bg">
+                        <CheckSquare size={20} color="#f2d06b" />
+                      </div>
+                      <div className="stat-text-content">
+                        <span className="stat-label">Votes</span>
+                        <span className="stat-value">{selectedCandidate.total_votes || 0}</span>
+                      </div>
+                    </div>
+
+                    {/* Carte Montant */}
+                    <div className="mini-stat-card">
+                      <div className="stat-icon-bg">
+                        <Banknote size={20} color="#f2d06b" />
+                      </div>
+                      <div className="stat-text-content">
+                        <span className="stat-label">Montant / vote</span>
+                        <span className="stat-value">200 FCFA</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section Biographie */}
+                  <div className="bio-card-large">
+                    <div className="bio-header">
+                      <BookOpen size={22} color="#f2d06b" />
+                      <span>Biographie</span>
+                    </div>
+                    <p className="bio-content-text">
+                      {selectedCandidate.biography || "Cette candidate n'a pas encore renseigné sa biographie."}
+                    </p>
+                  </div>
+
+                  {/* Bouton de Vote final */}
+                  <button className="btn-vote-now-gold" onClick={() => handleVoteClick(selectedCandidate)}>
+                    <Heart size={20} fill="currentColor" />
+                    Voter pour {selectedCandidate.name}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-
+        )}
+      </animatePresence>
       {/* --- MODAL PAIEMENT --- */}
       {showVoteModal && (
         <div className="payment-overlay" onClick={() => setShowVoteModal(false)}>
