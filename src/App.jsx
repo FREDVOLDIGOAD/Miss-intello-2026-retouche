@@ -191,52 +191,54 @@ export default function App() {
       </AnimatePresence>
 
       {/* --- MODAL PAIEMENT --- */}
-      <div className="payment-form">
-          <div className="net-selector">
-              <button 
-                className={voteData.network === 'TMONEY' ? 'active' : ''} 
-                onClick={() => setVoteData({...voteData, network:'TMONEY'})}
-              >
-                TMONEY
-              </button>
-              <button 
-                className={voteData.network === 'FLOOZ' ? 'active' : ''} 
-                onClick={() => setVoteData({...voteData, network:'FLOOZ'})}
-              >
-                FLOOZ
-              </button>
-          </div>
+      {showVoteModal && (
+        <div className="payment-form">
+            <div className="net-selector">
+                <button 
+                  className={voteData.network === 'TMONEY' ? 'active' : ''} 
+                  onClick={() => setVoteData({...voteData, network:'TMONEY'})}
+                >
+                  TMONEY
+                </button>
+                <button 
+                  className={voteData.network === 'FLOOZ' ? 'active' : ''} 
+                  onClick={() => setVoteData({...voteData, network:'FLOOZ'})}
+                >
+                  FLOOZ
+                </button>
+            </div>
 
-          <label className="input-label">Numéro de téléphone</label>
-          <input 
-            type="tel" 
-            placeholder="Numéro Togo (8 chiffres)" 
-            value={voteData.phone}
-            onChange={(e) => setVoteData({...voteData, phone: e.target.value.replace(/\D/g, '')})} 
-            maxLength="8"
-          />
+            <label className="input-label">Numéro de téléphone</label>
+            <input 
+              type="tel" 
+              placeholder="Numéro Togo (8 chiffres)" 
+              value={voteData.phone}
+              onChange={(e) => setVoteData({...voteData, phone: e.target.value.replace(/\D/g, '')})} 
+              maxLength="8"
+            />
 
-          <label className="input-label">Nombre de votes (200 F / unité)</label>
-          <input 
-            type="number" 
-            min="1" 
-            value={voteData.qty} 
-            onChange={(e) => {
-              const val = parseInt(e.target.value);
-              setVoteData({...voteData, qty: isNaN(val) ? 0 : val});
-            }} 
-          />
+            <label className="input-label">Nombre de votes (200 F / unité)</label>
+            <input 
+              type="number" 
+              min="1" 
+              value={voteData.qty} 
+              onChange={(e) => {
+                const val = parseInt(e.target.value);
+                setVoteData({...voteData, qty: isNaN(val) ? 0 : val});
+              }} 
+            />
 
-          {/* CALCUL DYNAMIQUE ICI */}
-          <div className="total-box">
-            Total à payer : <span>{(voteData.qty * 200).toLocaleString()} FCFA</span>
-          </div>
+            {/* CALCUL DYNAMIQUE ICI */}
+            <div className="total-box">
+              Total à payer : <span>{(voteData.qty * 200).toLocaleString()} FCFA</span>
+            </div>
 
-          {/* BOUTON CORRIGÉ */}
-          <button className="btn-confirm-final" onClick={confirmPayment} translate="no">
-            CONFIRMER LE PAIEMENT
-          </button>
-      </div>
+            {/* BOUTON CORRIGÉ */}
+            <button className="btn-confirm-final" onClick={confirmPayment} translate="no">
+              CONFIRMER LE PAIEMENT
+            </button>
+        </div>
+      )}
     </div>
   );
 }
