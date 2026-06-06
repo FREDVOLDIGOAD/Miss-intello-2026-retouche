@@ -82,38 +82,54 @@ input { width: 100%; padding: 15px; margin-bottom: 15px; background: #000; borde
 @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.3); opacity: 0.3; } }
 @media (max-width: 768px) { .podium-grid { grid-template-columns: 1fr; gap: 60px; } .main-header { border-left: none; padding-left: 0; text-align: center; } .countdown-box { justify-content: center; } }
 
-/* --- MODAL SPLIT DÉTAILS --- */
+/* --- CORRECTIF MODAL DÉTAILS --- */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999; /* Force l'affichage au premier plan */
+  backdrop-filter: blur(15px);
+  padding: 20px;
+  overflow-y: auto;
+}
 
 .modal-split-card {
-  background-color: #0f0a1e; /* Fond violet sombre profond */
-  border: 1.5px solid #d4af37; /* Bordure dorée fine */
-  border-radius: 30px;
-  width: 95%;
-  max-width: 900px;
+  background: #0d061f;
+  border: 1px solid #d4af37;
+  border-radius: 40px;
+  width: 100%;
+  max-width: 1000px;
   position: relative;
-  overflow: hidden;
-  padding: 30px;
-  animation: modalFadeUp 0.4s ease;
+  padding: 40px;
+  margin: auto; /* Important pour le scroll mobile */
 }
 
 .split-container {
   display: grid;
-  grid-template-columns: 1fr 1.2fr; /* Sépare en deux colonnes */
-  gap: 30px;
+  grid-template-columns: 45% 1fr; /* Image prend 45% */
+  gap: 40px;
+  align-items: start;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .split-container { grid-template-columns: 1fr; }
-  .modal-split-card { padding: 20px; }
+  .candidate-image-frame { height: 400px !important; }
 }
 
-/* Côté Gauche */
 .candidate-image-frame {
   width: 100%;
-  height: 100%;
-  min-height: 450px;
-  border-radius: 20px;
+  height: 580px;
+  border-radius: 25px;
   overflow: hidden;
+  background: #111;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .candidate-image-frame img {
@@ -122,121 +138,49 @@ input { width: 100%; padding: 15px; margin-bottom: 15px; background: #000; borde
   object-fit: cover;
 }
 
-/* Côté Droit */
-.split-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.badge-miss-gold {
-  display: inline-block;
-  background: rgba(212, 175, 55, 0.1);
-  color: #f2d06b;
-  padding: 5px 15px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: bold;
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  width: fit-content;
-  margin-bottom: 15px;
-}
-
+/* Correction alignement Titre */
 .candidate-title-main {
   font-family: 'Playfair Display', serif;
-  font-size: 3rem;
-  margin: 0 0 25px 0;
+  font-size: clamp(2rem, 5vw, 3.5rem);
   color: white;
+  margin: 15px 0 30px;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
-/* Statistiques */
-.stats-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.mini-stat-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 15px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.stat-icon-bg {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 10px;
-  border-radius: 12px;
-  display: flex;
-}
-
-.stat-label {
-  display: block;
-  font-size: 0.7rem;
-  color: #888;
-  margin-bottom: 2px;
-}
-
-.stat-value {
-  font-weight: bold;
-  font-size: 1rem;
-}
-
-/* Biographie */
-.bio-card-large {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 25px;
-}
-
-.bio-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: white;
-  font-weight: bold;
-  margin-bottom: 12px;
-}
-
-.bio-content-text {
-  color: #ccc;
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
-
-/* Bouton Voter */
 .btn-vote-now-gold {
   background: #f2d06b;
-  color: black;
+  color: #000;
   border: none;
-  padding: 18px;
+  padding: 20px;
   border-radius: 50px;
   font-weight: 800;
+  font-size: 1.1rem;
+  width: 100%;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  cursor: pointer;
-  width: 100%;
-  font-size: 1.1rem;
-  transition: 0.3s ease;
-}
-
-.btn-vote-now-gold:hover {
-  transform: scale(1.02);
-  filter: brightness(1.1);
+  gap: 12px;
+  margin-top: 20px;
+  transition: 0.3s;
 }
 
 .close-details {
   position: absolute;
-  top: 25px; right: 25px;
-  background: none; border: none;
-  color: white; cursor: pointer;
-  z-index: 10;
+  top: 25px;
+  right: 25px;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
 }
+
+.close-details:hover { background: #ff4d4d; }
