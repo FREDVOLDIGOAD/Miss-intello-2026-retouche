@@ -81,126 +81,162 @@ input { width: 100%; padding: 15px; margin-bottom: 15px; background: #000; borde
 
 @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.3); opacity: 0.3; } }
 @media (max-width: 768px) { .podium-grid { grid-template-columns: 1fr; gap: 60px; } .main-header { border-left: none; padding-left: 0; text-align: center; } .countdown-box { justify-content: center; } }
-/* --- STYLE DÉTAILS (IMAGE ADJROKOE) --- */
 
-.details-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
+/* --- MODAL SPLIT DÉTAILS --- */
 
-.details-modal-box {
-  background: #11091d; /* Violet sombre de l'image */
-  border: 1px solid #d4af37; /* Bordure dorée fine */
-  border-radius: 20px;
-  width: 100%;
+.modal-split-card {
+  background-color: #0f0a1e; /* Fond violet sombre profond */
+  border: 1.5px solid #d4af37; /* Bordure dorée fine */
+  border-radius: 30px;
+  width: 95%;
   max-width: 900px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+  padding: 30px;
+  animation: modalFadeUp 0.4s ease;
 }
 
-.details-close {
-  position: absolute;
-  top: 20px; right: 20px;
-  background: none; border: none;
-  color: white; cursor: pointer;
-  z-index: 100;
-}
-
-.details-grid-container {
+.split-container {
   display: grid;
-  grid-template-columns: 1fr 1.2fr; /* Image à gauche, Texte à droite */
+  grid-template-columns: 1fr 1.2fr; /* Sépare en deux colonnes */
+  gap: 30px;
 }
 
 @media (max-width: 768px) {
-  .details-grid-container { grid-template-columns: 1fr; }
-  .details-image-side { height: 350px !important; }
+  .split-container { grid-template-columns: 1fr; }
+  .modal-split-card { padding: 20px; }
 }
 
-.details-image-side {
+/* Côté Gauche */
+.candidate-image-frame {
   width: 100%;
-  height: 550px;
+  height: 100%;
+  min-height: 450px;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
-.details-image-side img {
+.candidate-image-frame img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.details-text-side {
-  padding: 40px;
+/* Côté Droit */
+.split-right {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.details-title-name {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: white;
-  margin: 0 0 25px 0;
-  text-transform: uppercase;
-}
-
-.details-specs-row {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
-}
-
-.details-specs-row p {
-  color: #d4af37; /* Labels en Or */
+.badge-miss-gold {
+  display: inline-block;
+  background: rgba(212, 175, 55, 0.1);
+  color: #f2d06b;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.75rem;
   font-weight: bold;
-  font-size: 0.9rem;
-}
-
-.details-specs-row p span {
-  color: white; /* Valeurs en Blanc */
-  display: block;
-  font-size: 1.1rem;
-  margin-top: 5px;
-}
-
-.details-bio-section h3 {
-  color: white;
-  font-size: 1.1rem;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  width: fit-content;
   margin-bottom: 15px;
+}
+
+.candidate-title-main {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  margin: 0 0 25px 0;
+  color: white;
+}
+
+/* Statistiques */
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.mini-stat-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 20px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
-.details-bio-section p {
+.stat-icon-bg {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px;
+  border-radius: 12px;
+  display: flex;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.7rem;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+.stat-value {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Biographie */
+.bio-card-large {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.bio-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.bio-content-text {
   color: #ccc;
-  line-height: 1.6;
   font-size: 0.95rem;
-  margin-bottom: 35px;
+  line-height: 1.6;
 }
 
-.details-vote-btn-gold {
-  background: #e3c08d; /* Or sablé de l'image */
+/* Bouton Voter */
+.btn-vote-now-gold {
+  background: #f2d06b;
   color: black;
   border: none;
-  padding: 16px;
-  border-radius: 12px;
+  padding: 18px;
+  border-radius: 50px;
   font-weight: 800;
-  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   cursor: pointer;
   width: 100%;
-  max-width: 300px;
-  text-transform: uppercase;
-  transition: 0.3s;
+  font-size: 1.1rem;
+  transition: 0.3s ease;
 }
 
-.details-vote-btn-gold:hover {
-  filter: brightness(1.1);
+.btn-vote-now-gold:hover {
   transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+.close-details {
+  position: absolute;
+  top: 25px; right: 25px;
+  background: none; border: none;
+  color: white; cursor: pointer;
+  z-index: 10;
 }
