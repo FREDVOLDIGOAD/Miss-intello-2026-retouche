@@ -40,20 +40,29 @@ header {
   -webkit-text-fill-color: transparent;
 }
 
+.subtitle {
+  color: #b085ff;
+  font-style: italic;
+  margin-top: 5px;
+}
+
 /* --- GRILLE & CARTES --- */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 30px;
+  gap: 35px;
 }
 
 .card {
   background: var(--glass);
   backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 25px;
   overflow: hidden;
   transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .card:hover {
@@ -63,8 +72,9 @@ header {
 }
 
 .image-container {
-  height: 380px;
+  height: 400px;
   position: relative;
+  background: #111;
 }
 
 .image-container img {
@@ -76,12 +86,66 @@ header {
   background: linear-gradient(to top, var(--deep-purple), transparent);
 }
 
-/* --- MODALES --- */
+/* --- INFOS CARTE --- */
+.info {
+  padding: 20px;
+  text-align: center;
+}
+
+.name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  margin: 10px 0;
+}
+
+.vote-count {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--primary-gold);
+  margin-bottom: 20px;
+}
+
+.vote-count span { font-size: 0.8rem; opacity: 0.6; }
+
+/* --- TOUS LES BOUTONS --- */
+.btn-vote, .btn-main-vote, .confirm-btn {
+  background: linear-gradient(45deg, var(--primary-gold), var(--light-gold));
+  color: #000;
+  border: none;
+  width: 100%;
+  padding: 15px;
+  border-radius: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-secondary {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.btn-secondary:hover { background: rgba(255, 255, 255, 0.15); border-color: var(--primary-gold); }
+
+/* --- MODALES (DÉTAILS & PAIEMENT) --- */
 .modal-overlay, .payment-overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.92);
+  background: rgba(0, 0, 0, 0.95);
   display: flex; align-items: center; justify-content: center;
-  z-index: 9999; backdrop-filter: blur(10px);
+  z-index: 9999; backdrop-filter: blur(15px);
   padding: 20px;
 }
 
@@ -89,13 +153,52 @@ header {
   background: #0f0a1e;
   border: 1px solid var(--primary-gold);
   border-radius: 30px;
-  padding: 30px;
+  padding: 35px;
   width: 100%;
-  max-width: 500px;
+  max-width: 550px;
+  position: relative;
   box-shadow: 0 0 60px var(--purple-glow);
 }
 
-/* --- CALCULATEUR VOTE (FIX) --- */
+.badge-miss {
+  color: var(--primary-gold);
+  font-weight: bold;
+  letter-spacing: 2px;
+  font-size: 0.8rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.modal-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  margin: 0 0 25px 0;
+}
+
+/* Grille des caractéristiques (Âge, Taille, Poids) */
+.modal-grid-specs {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.spec-card {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 15px;
+  border-radius: 15px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.spec-card span { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; margin-bottom: 5px; }
+.spec-card strong { font-size: 1.1rem; color: #fff; }
+
+.bio-section { margin-bottom: 25px; }
+.bio-title { font-weight: 600; margin-bottom: 10px; color: var(--light-gold); }
+.bio-text { color: #ccc; line-height: 1.7; font-size: 0.95rem; text-align: justify; }
+
+/* --- CALCULATEUR VOTE --- */
 .total-box {
   background: rgba(212, 175, 55, 0.1);
   padding: 20px;
@@ -113,69 +216,25 @@ header {
   margin-top: 5px;
 }
 
-/* --- BOUTONS --- */
-.confirm-btn, .btn-main-vote {
-  background: linear-gradient(45deg, var(--primary-gold), var(--light-gold));
-  color: #000; border: none; width: 100%; padding: 18px;
-  border-radius: 50px; font-weight: 800; cursor: pointer;
-  text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+/* --- NETWORK SELECTOR --- */
+.network-selector { display: flex; gap: 10px; margin: 15px 0 20px; }
+.network-selector button {
+  flex: 1; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03); color: white; cursor: pointer;
 }
+.network-selector button.active { border-color: var(--primary-gold); background: rgba(212, 175, 55, 0.1); color: var(--primary-gold); }
 
-.confirm-btn:hover { transform: scale(1.02); filter: brightness(1.1); }
-
-/* --- FOOTER FINAL --- */
-.site-footer {
-  margin-top: 100px;
-  background: rgba(0, 0, 0, 0.4);
-  border-top: 1px solid var(--glass);
-  padding: 60px 20px 30px;
-}
-
-.footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 40px;
-}
-
-.footer-section h4 {
-  color: var(--primary-gold);
-  margin-bottom: 20px;
-  text-transform: uppercase;
-  font-size: 0.9rem;
-}
-
+/* --- FOOTER --- */
+.site-footer { margin-top: 100px; background: rgba(0, 0, 0, 0.4); border-top: 1px solid var(--glass); padding: 60px 20px 30px; }
+.footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; }
+.footer-section h4 { color: var(--primary-gold); margin-bottom: 20px; text-transform: uppercase; font-size: 0.9rem; }
 .footer-section ul { list-style: none; padding: 0; }
 .footer-section li { margin-bottom: 12px; color: #aaa; font-size: 0.9rem; }
 .footer-section a { color: #aaa; text-decoration: none; transition: 0.3s; }
 .footer-section a:hover { color: white; }
+.footer-bottom { max-width: 1200px; margin: 40px auto 0; padding-top: 30px; border-top: 1px solid var(--glass); text-align: center; color: #666; font-size: 0.8rem; }
 
-.footer-bottom {
-  max-width: 1200px;
-  margin: 40px auto 0;
-  padding-top: 30px;
-  border-top: 1px solid var(--glass);
-  text-align: center;
-  color: #666;
-  font-size: 0.8rem;
-}
-
-.paygate-badge {
-  display: inline-block;
-  margin-top: 15px;
-  padding: 5px 15px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 5px;
-  color: var(--primary-gold);
-}
-
-/* Form Inputs */
-input {
-  width: 100%; padding: 15px; background: #000;
-  border: 1px solid var(--glass); border-radius: 12px;
-  color: white; font-size: 1rem; margin-top: 10px;
-  box-sizing: border-box;
-}
-
+/* --- FORM --- */
+input { width: 100%; padding: 15px; background: #000; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; margin-top: 8px; box-sizing: border-box; }
 input:focus { border-color: var(--primary-gold); outline: none; }
+.close-modal, .close-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }

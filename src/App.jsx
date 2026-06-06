@@ -2,37 +2,56 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import './App.css';
 
+// Constante pour le prix du vote
+const PRICE_PER_VOTE = 200;
+
 export default function App() {
   // États de base
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
 
-  // Nouveaux états pour le paiement personnalisé
+  // États pour le paiement
   const [showVoteModal, setShowVoteModal] = useState(false);
   const [voteData, setVoteData] = useState({ qty: 1, phone: '', network: 'TMONEY' });
   const [isProcessing, setIsProcessing] = useState(false);
 
-  useEffect(() => { fetchCandidates(); }, []);
+  useEffect(() => {
+    fetchCandidates();
+  }, []);
 
   const fetchCandidates = async () => {
-    const { data } = await supabase.from('candidates').select('*').order('id');
-    setCandidates(data || []);
-    setLoading(false);
+    try {
+      const { data, error } = await supabase
+        .from('candidates')
+        .select('*')
+        .order('id', { ascending: true });
+      
+      if (error) throw error;
+      setCandidates(data || []);
+    } catch (err) {
+      console.error("Erreur de chargement:", err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Fonction pour ouvrir la fenêtre de vote
+  // Ouvre la fenêtre de vote
   const handleVoteClick = (candidate) => {
-    setSelectedCandidate(candidate); // On mémorise la candidate
-    setShowVoteModal(true); // On ouvre la fenêtre de paiement
+    setSelectedCandidate(candidate);
+    setShowVoteModal(true);
   };
 
-  // Fonction finale qui appelle l'API PayGate
+  // Appel API PayGate
   const confirmPayment = async () => {
     const { qty, phone, network } = voteData;
     
     if (!phone || phone.length < 8) {
       return alert("Veuillez entrer un numéro Togo valide (8 chiffres).");
+    }
+
+    if (!qty || qty < 1) {
+      return alert("Veuillez choisir au moins 1 vote.");
     }
 
     setIsProcessing(true);
@@ -42,16 +61,17 @@ export default function App() {
           candidateId: selectedCandidate.id, 
           phoneNumber: phone, 
           network: network, 
-          amount: qty * 200 
+          amount: qty * PRICE_PER_VOTE 
         }
       });
 
       if (error) throw error;
 
-      if (data.success) {
+      if (data.success || data.paymentInitiated) {
         alert("✅ Demande envoyée ! Veuillez confirmer la transaction sur votre téléphone en tapant votre code PIN.");
         setShowVoteModal(false);
-        setVoteData({ qty: 1, phone: '', network: 'TMONEY' }); // Reset
+        // On ne ferme pas forcément selectedCandidate pour que l'utilisateur reste là où il était
+        setVoteData({ qty: 1, phone: '', network: 'TMONEY' }); 
       }
     } catch (err) {
       alert("❌ Erreur : " + (err.message || "Le service de paiement est indisponible."));
@@ -67,10 +87,11 @@ export default function App() {
       url: window.location.href,
     };
     try {
-      if (navigator.share) await navigator.share(shareData);
-      else {
-        navigator.clipboard.writeText(window.location.href);
-        alert("Lien copié !");
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        alert("Lien de vote copié !");
       }
     } catch (err) { console.log(err); }
   };
@@ -79,35 +100,36 @@ export default function App() {
 
   return (
     <div className="container">
-      <header>
-        <h1 className="logo">Miss Intello 2026</h1>
-        <p className="subtitle">L'intelligence est la nouvelle beauté</p>
-      </header>
+      {!selectedCandidate || showVoteModal ? (
+        <>
+          <header>
+            <h1 className="logo">Miss Intello 2026</h1>
+            <p className="subtitle">L'intelligence est la nouvelle beauté</p>
+          </header>
 
-      {/* GRILLE DES CANDIDATES */}
-      <div className="grid">
-        {candidates.map(c => (
-          <div key={c.id} className="card">
-            <div className="image-container">
-              <img src={c.photo_url || 'https://via.placeholder.com/400x600'} alt={c.name} />
-            </div>
-            <div className="info">
-              <h3 className="name">{c.name}</h3>
-              <div className="vote-count">{c.total_votes || 0} <span>VOTES</span></div>
-              
-              <button className="btn-vote" onClick={() => handleVoteClick(c)}>VOTER MAINTENANT</button>
-              
-              <div className="btn-group">
-                <button className="btn-secondary" onClick={() => setSelectedCandidate(c)}>Détails</button>
-                <button className="btn-secondary" onClick={() => handleShare(c)}>Partager</button>
+          <div className="grid">
+            {candidates.map(c => (
+              <div key={c.id} className="card">
+                <div className="image-container">
+                  <img src={c.photo_url || 'https://via.placeholder.com/400x600'} alt={c.name} />
+                </div>
+                <div className="info">
+                  <h3 className="name">{c.name}</h3>
+                  <div className="vote-count">{c.total_votes || 0} <span>VOTES</span></div>
+                  
+                  <button className="btn-vote" onClick={() => handleVoteClick(c)}>VOTER MAINTENANT</button>
+                  
+                  <div className="btn-group">
+                    <button className="btn-secondary" onClick={() => setSelectedCandidate(c)}>Détails</button>
+                    <button className="btn-secondary" onClick={() => handleShare(c)}>Partager</button>
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
-
-      {/* FENÊTRE DÉTAILS (MODAL DÉTAILS) */}
-      {selectedCandidate && !showVoteModal && (
+        </>
+      ) : (
+        /* VUE DÉTAILLÉE (Affichée uniquement si on ne vote pas) */
         <div className="modal-overlay" onClick={() => setSelectedCandidate(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <button className="close-modal" onClick={() => setSelectedCandidate(null)}>&times;</button>
@@ -122,7 +144,7 @@ export default function App() {
             </div>
             <div className="bio-section">
                 <div className="bio-title">📖 Biographie</div>
-                <p className="bio-text">{selectedCandidate.biography}</p>
+                <p className="bio-text">{selectedCandidate.biography || "Biographie à venir..."}</p>
             </div>
             <button className="btn-main-vote" onClick={() => handleVoteClick(selectedCandidate)}>
                 ❤️ Voter pour {selectedCandidate.name}
@@ -131,7 +153,7 @@ export default function App() {
         </div>
       )}
 
-      {/* FENÊTRE DE PAIEMENT (MODAL VOTE) */}
+      {/* MODAL DE PAIEMENT (Toujours au dessus) */}
       {showVoteModal && (
         <div className="payment-overlay" onClick={() => !isProcessing && setShowVoteModal(false)}>
           <div className="payment-modal" onClick={e => e.stopPropagation()}>
@@ -164,30 +186,29 @@ export default function App() {
                 maxLength="8"
               />
 
-              <label>Nombre de votes (200F / vote) :</label>
+              <label>Nombre de votes ({PRICE_PER_VOTE}F / vote) :</label>
               <input 
                 type="number" 
                 min="1"
                 value={voteData.qty}
-                /* Correction : On s'assure que la valeur est bien transformée en nombre */
                 onChange={(e) => {
                   const val = parseInt(e.target.value);
-                  setVoteData({...voteData, qty: isNaN(val) ? 0 : val});
+                  setVoteData({...voteData, qty: isNaN(val) ? 1 : val});
                 }}
               />
 
               <div className="total-box">
-                {/* On multiplie en temps réel la quantité par 200 */}
-                Total à payer : <span>{(voteData.qty * 200).toLocaleString()} FCFA</span>
+                Total à payer : <span>{(voteData.qty * PRICE_PER_VOTE).toLocaleString()} FCFA</span>
               </div>
 
               <button className="confirm-btn" onClick={confirmPayment} disabled={isProcessing || voteData.qty <= 0}>
-                {isProcessing ? "CONNEXION PAYGATE..." : `CONFIRMER (${(voteData.qty * 200).toLocaleString()}F)`}
+                {isProcessing ? "CONNEXION PAYGATE..." : `CONFIRMER (${(voteData.qty * PRICE_PER_VOTE).toLocaleString()}F)`}
               </button>
             </div>
           </div>
         </div>
       )}
+
       <footer className="site-footer">
         <div className="footer-content">
           <div className="footer-section">
@@ -207,9 +228,9 @@ export default function App() {
           <div className="footer-section">
             <h4>Mentions Légales</h4>
             <ul>
-              <li><a href="#/" onClick={() => alert("Éditeur : Comité Miss Intello. Hébergeur : Vercel Inc. Système de vote sécurisé par PayGate Global.")}>Mentions Légales</a></li>
-              <li><a href="#/" onClick={() => alert("Les votes ne sont ni remboursables ni annulables une fois confirmés par l'opérateur (TMoney/Flooz).")}>CGV / CGU</a></li>
-              <li><a href="#/" onClick={() => alert("Vos données de paiement sont traitées exclusivement par PayGate Global. Aucune donnée bancaire n'est stockée sur nos serveurs.")}>Confidentialité</a></li>
+              <li><a href="#/" onClick={(e) => { e.preventDefault(); alert("Éditeur : Comité Miss Intello. Système de vote sécurisé par PayGate Global."); }}>Mentions Légales</a></li>
+              <li><a href="#/" onClick={(e) => { e.preventDefault(); alert("Les votes sont définitifs et non remboursables."); }}>CGV / CGU</a></li>
+              <li><a href="#/" onClick={(e) => { e.preventDefault(); alert("Vos données de paiement sont traitées par PayGate Global."); }}>Confidentialité</a></li>
             </ul>
           </div>
         </div>
@@ -220,6 +241,5 @@ export default function App() {
         </div>
       </footer>
     </div>
-    
   );
 }
