@@ -135,79 +135,108 @@ export default function App() {
 
       {/* --- MODAL DÉTAILS (Emma Style) --- */}
       {/* --- MODAL DÉTAILS (STYLE EXACT SELON TON IMAGE) --- */}
-        <AnimatePresence>
-          {selectedCandidate && !showVoteModal && (
+      <AnimatePresence>
+        {selectedCandidate && !showVoteModal && (
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }} 
+            className="details-overlay" 
+            onClick={() => setSelectedCandidate(null)}
+          >
             <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              className="details-overlay" 
-              onClick={() => setSelectedCandidate(null)}
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="details-modal-box" 
+              onClick={e => e.stopPropagation()}
             >
-              <motion.div 
-                initial={{ scale: 0.9, y: 20 }}
-                animate={{ scale: 1, y: 0 }}
-                className="details-modal-box" 
-                onClick={e => e.stopPropagation()}
-              >
-                {/* Bouton Fermer */}
-                <button className="details-close" onClick={() => setSelectedCandidate(null)}>
-                  <X size={24} />
-                </button>
+              {/* Bouton Fermer */}
+              <button className="details-close" onClick={() => setSelectedCandidate(null)}>
+                <X size={24} />
+              </button>
 
-                <div className="details-grid-container">
-                  {/* CÔTÉ GAUCHE : IMAGE */}
-                  <div className="details-image-side">
-                    <img src={selectedCandidate.photo_url} alt={selectedCandidate.name} />
-                  </div>
-
-                  {/* CÔTÉ DROIT : INFOS */}
-                  <div className="details-text-side">
-                    <h2 className="details-title-name" translate="no">{selectedCandidate.name}</h2>
-                    
-                    <div className="details-specs-row">
-                      <p>Âge : <span>{selectedCandidate.age || '--'} ans</span></p>
-                      <p>Taille : <span>{selectedCandidate.taille || '--'}</span></p>
-                      <p>Poids : <span>{selectedCandidate.poids || '--'}</span></p>
-                    </div>
-
-                    <div className="details-bio-section">
-                      <h3><span role="img" aria-label="bio">📖</span> Biographie</h3>
-                      <p>{selectedCandidate.biography || "Biographie en cours de rédaction..."}</p>
-                    </div>
-
-                    <button 
-                      className="details-vote-btn-gold" 
-                      onClick={() => handleVoteClick(selectedCandidate)}
-                      translate="no"
-                    >
-                      VOTER POUR ELLE
-                    </button>
-                  </div>
+              <div className="details-grid-container">
+                {/* CÔTÉ GAUCHE : IMAGE */}
+                <div className="details-image-side">
+                  <img src={selectedCandidate.photo_url} alt={selectedCandidate.name} />
                 </div>
-              </motion.div>
+
+                {/* CÔTÉ DROIT : INFOS */}
+                <div className="details-text-side">
+                  <h2 className="details-title-name" translate="no">{selectedCandidate.name}</h2>
+                  
+                  <div className="details-specs-row">
+                    <p>Âge : <span>{selectedCandidate.age || '--'} ans</span></p>
+                    <p>Taille : <span>{selectedCandidate.taille || '--'}</span></p>
+                    <p>Poids : <span>{selectedCandidate.poids || '--'}</span></p>
+                  </div>
+
+                  <div className="details-bio-section">
+                    <h3><span role="img" aria-label="bio">📖</span> Biographie</h3>
+                    <p>{selectedCandidate.biography || "Biographie en cours de rédaction..."}</p>
+                  </div>
+
+                  <button 
+                    className="details-vote-btn-gold" 
+                    onClick={() => handleVoteClick(selectedCandidate)}
+                    translate="no"
+                  >
+                    VOTER POUR ELLE
+                  </button>
+                </div>
+              </div>
             </motion.div>
-          )}
-        </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* --- MODAL PAIEMENT --- */}
-      {showVoteModal && (
-        <div className="payment-overlay" onClick={() => setShowVoteModal(false)}>
-          <div className="payment-modal" onClick={e => e.stopPropagation()}>
-            <h2 className="gold-text">Soutenir {selectedCandidate.name}</h2>
-            <div className="payment-form">
-                <div className="net-selector">
-                    <button className={voteData.network === 'TMONEY' ? 'active' : ''} onClick={() => setVoteData({...voteData, network:'TMONEY'})}>TMONEY</button>
-                    <button className={voteData.network === 'FLOOZ' ? 'active' : ''} onClick={() => setVoteData({...voteData, network:'FLOOZ'})}>FLOOZ</button>
-                </div>
-                <input type="tel" placeholder="Numéro Togo (8 chiffres)" onChange={(e) => setVoteData({...voteData, phone: e.target.value})} />
-                <input type="number" min="1" value={voteData.qty} onChange={(e) => setVoteData({...voteData, qty: e.target.value})} />
-                <div className="total-box">Total : <span>{(voteData.qty * 200).toLocaleString()} F</span></div>
-                <button className="btn-confirm-final" onClick={confirmPayment} translate="no">CONFIRMER LE PAIEMENT</button>
-            </div>
+      <div className="payment-form">
+          <div className="net-selector">
+              <button 
+                className={voteData.network === 'TMONEY' ? 'active' : ''} 
+                onClick={() => setVoteData({...voteData, network:'TMONEY'})}
+              >
+                TMONEY
+              </button>
+              <button 
+                className={voteData.network === 'FLOOZ' ? 'active' : ''} 
+                onClick={() => setVoteData({...voteData, network:'FLOOZ'})}
+              >
+                FLOOZ
+              </button>
           </div>
-        </div>
-      )}
+
+          <label className="input-label">Numéro de téléphone</label>
+          <input 
+            type="tel" 
+            placeholder="Numéro Togo (8 chiffres)" 
+            value={voteData.phone}
+            onChange={(e) => setVoteData({...voteData, phone: e.target.value.replace(/\D/g, '')})} 
+            maxLength="8"
+          />
+
+          <label className="input-label">Nombre de votes (200 F / unité)</label>
+          <input 
+            type="number" 
+            min="1" 
+            value={voteData.qty} 
+            onChange={(e) => {
+              const val = parseInt(e.target.value);
+              setVoteData({...voteData, qty: isNaN(val) ? 0 : val});
+            }} 
+          />
+
+          {/* CALCUL DYNAMIQUE ICI */}
+          <div className="total-box">
+            Total à payer : <span>{(voteData.qty * 200).toLocaleString()} FCFA</span>
+          </div>
+
+          {/* BOUTON CORRIGÉ */}
+          <button className="btn-confirm-final" onClick={confirmPayment} translate="no">
+            CONFIRMER LE PAIEMENT
+          </button>
+      </div>
     </div>
   );
 }
