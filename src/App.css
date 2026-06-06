@@ -1,83 +1,201 @@
-/* --- EFFETS DE FOND --- */
-.app-wrapper {
-  position: relative;
-  overflow: hidden;
+/* --- POLICES --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&family=Playfair+Display:wght@700&display=swap');
+
+:root {
+  --gold: #d4af37;
+  --light-gold: #f2d06b;
+  --deep-purple: #0f0a1e;
+  --mid-purple: #1a0b2e;
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
-.glow-bg {
-  position: fixed;
-  top: -10%; left: -10%;
-  width: 40%; height: 40%;
-  background: radial-gradient(circle, rgba(107, 33, 168, 0.2) 0%, transparent 70%);
-  z-index: -1;
-  filter: blur(80px);
+/* --- RESET & FOND --- */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #050505;
+  background: radial-gradient(circle at top right, var(--mid-purple), #050505);
+  background-attachment: fixed;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
 }
 
-/* --- PODIUM --- */
-.podium-section { margin-bottom: 60px; }
-.section-title { 
-  display: flex; align-items: center; gap: 10px; 
-  font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 30px;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* --- HEADER --- */
+header.main-header {
+  text-align: left;
+  margin-bottom: 40px;
+  border-left: 5px solid var(--gold);
+  padding-left: 20px;
+}
+
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  text-transform: uppercase;
+  margin: 0;
+  background: linear-gradient(to right, #fff, var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --- COMPTE À REBOURS (L'encadré gris sur ta photo) --- */
+.countdown-box {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  background: var(--glass);
+  backdrop-filter: blur(10px);
+  padding: 30px;
+  border-radius: 25px;
+  border: 1px solid var(--glass-border);
+  margin-bottom: 60px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.timer-item {
+  text-align: center;
+}
+
+.timer-item span {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.timer-item label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #aaa;
+}
+
+/* --- PODIUM (TOP 3) --- */
+.podium-section {
+  margin-bottom: 80px;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .podium-grid {
   display: grid;
   grid-template-columns: 1fr 1.2fr 1fr;
-  align-items: flex-end;
   gap: 20px;
+  align-items: flex-end;
 }
 
-@media (max-width: 768px) { .podium-grid { grid-template-columns: 1fr; } }
+@media (max-width: 850px) {
+  .podium-grid { grid-template-columns: 1fr; align-items: center; }
+}
 
 .podium-card {
   background: var(--glass);
   border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: 25px;
+  padding: 30px 20px;
   text-align: center;
+  position: relative;
+  transition: 0.4s ease;
+}
+
+.rank-1 { 
+  border-color: var(--gold); 
+  background: rgba(212, 175, 55, 0.05);
+  transform: scale(1.05); 
+  z-index: 2;
+}
+
+.rank-badge {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gold);
+  color: #000;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  box-shadow: 0 0 20px var(--gold);
+}
+
+.podium-card img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--gold);
+  margin-bottom: 15px;
+}
+
+/* --- BARRE DE RECHERCHE --- */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  padding: 15px 30px;
+  border-radius: 50px;
+  max-width: 600px;
+  margin: 0 auto 60px;
+}
+
+.search-bar input {
+  background: transparent;
+  border: none;
+  color: white;
+  width: 100%;
+  font-size: 1.1rem;
+  outline: none;
+}
+
+/* --- GRILLE DES CARTES --- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 35px;
+}
+
+.card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 25px;
+  overflow: hidden;
+  transition: 0.4s ease;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  border-color: var(--gold);
+}
+
+.image-container {
+  height: 380px;
   position: relative;
 }
 
-.rank-1 { border-color: var(--primary-gold); box-shadow: 0 0 30px rgba(212, 175, 55, 0.2); transform: scale(1.1); z-index: 2;}
-.rank-badge {
-  position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
-  background: var(--primary-gold); color: #000; width: 35px; height: 35px;
-  border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900;
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
-
-.podium-card img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--glass-border); margin-bottom: 10px;}
-
-/* --- COMPTE À REBOURS --- */
-.countdown-box {
-  display: flex; justify-content: center; gap: 20px; margin-bottom: 60px;
-  background: rgba(0,0,0,0.3); padding: 20px; border-radius: 20px; border: 1px solid var(--glass-border);
-}
-
-.timer-item { text-align: center; min-width: 70px; }
-.timer-item span { display: block; font-size: 2rem; font-weight: 800; color: var(--primary-gold); }
-.timer-item label { font-size: 0.7rem; text-transform: uppercase; color: #888; }
-
-/* --- RECHERCHE --- */
-.search-bar {
-  display: flex; align-items: center; gap: 15px;
-  background: var(--glass); border: 1px solid var(--glass-border);
-  padding: 12px 25px; border-radius: 50px; margin-bottom: 40px;
-  max-width: 500px; margin-left: auto; margin-right: auto;
-}
-
-.search-bar input { background: transparent; border: none; color: white; width: 100%; font-size: 1rem; margin: 0; }
-.search-bar input:focus { outline: none; }
-
-/* --- WHY VOTE --- */
-.why-vote {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px; margin-bottom: 60px;
-}
-
-.info-card {
-  background: rgba(255,255,255,0.02); padding: 25px; border-radius: 20px;
-  text-align: center; border: 1px solid var(--glass-border);
-}
-
-.info-card h3 { color: white; margin: 15px 0 10px; font-size: 1.1rem; }
-.info-card p { color: #888; font-size: 0.9rem; }
