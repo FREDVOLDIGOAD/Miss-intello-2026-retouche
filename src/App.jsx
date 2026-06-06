@@ -134,29 +134,61 @@ export default function App() {
       </div>
 
       {/* --- MODAL DÉTAILS (Emma Style) --- */}
-      <AnimatePresence>
-        {selectedCandidate && !showVoteModal && (
-          <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="emma-overlay" onClick={() => setSelectedCandidate(null)}>
-            <div className="emma-modal" onClick={e => e.stopPropagation()}>
-              <button className="emma-close" onClick={() => setSelectedCandidate(null)}><X size={30}/></button>
-              <div className="emma-photo"><img src={selectedCandidate.photo_url} alt="" /></div>
-              <div className="emma-body">
-                <h2 className="emma-title" translate="no">{selectedCandidate.name}, {selectedCandidate.age}</h2>
-                <p className="emma-sub">{selectedCandidate.region || 'Candidate Officielle'}</p>
-                <div className="emma-specs">
-                    <div><span>Taille</span><strong>{selectedCandidate.taille || '--'}</strong></div>
-                    <div><span>Poids</span><strong>{selectedCandidate.poids || '--'}</strong></div>
-                    <div><span>Âge</span><strong>{selectedCandidate.age || '--'} ans</strong></div>
+      {/* --- MODAL DÉTAILS (STYLE EXACT SELON TON IMAGE) --- */}
+        <AnimatePresence>
+          {selectedCandidate && !showVoteModal && (
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              className="details-overlay" 
+              onClick={() => setSelectedCandidate(null)}
+            >
+              <motion.div 
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                className="details-modal-box" 
+                onClick={e => e.stopPropagation()}
+              >
+                {/* Bouton Fermer */}
+                <button className="details-close" onClick={() => setSelectedCandidate(null)}>
+                  <X size={24} />
+                </button>
+
+                <div className="details-grid-container">
+                  {/* CÔTÉ GAUCHE : IMAGE */}
+                  <div className="details-image-side">
+                    <img src={selectedCandidate.photo_url} alt={selectedCandidate.name} />
+                  </div>
+
+                  {/* CÔTÉ DROIT : INFOS */}
+                  <div className="details-text-side">
+                    <h2 className="details-title-name" translate="no">{selectedCandidate.name}</h2>
+                    
+                    <div className="details-specs-row">
+                      <p>Âge : <span>{selectedCandidate.age || '--'} ans</span></p>
+                      <p>Taille : <span>{selectedCandidate.taille || '--'}</span></p>
+                      <p>Poids : <span>{selectedCandidate.poids || '--'}</span></p>
+                    </div>
+
+                    <div className="details-bio-section">
+                      <h3><span role="img" aria-label="bio">📖</span> Biographie</h3>
+                      <p>{selectedCandidate.biography || "Biographie en cours de rédaction..."}</p>
+                    </div>
+
+                    <button 
+                      className="details-vote-btn-gold" 
+                      onClick={() => handleVoteClick(selectedCandidate)}
+                      translate="no"
+                    >
+                      VOTER POUR ELLE
+                    </button>
+                  </div>
                 </div>
-                <div className="bio-section">
-                   <p>{selectedCandidate.biography || "Biographie en cours de rédaction..."}</p>
-                </div>
-                <button className="emma-btn-vote" onClick={() => handleVoteClick(selectedCandidate)} translate="no">VOTER POUR ELLE</button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
       {/* --- MODAL PAIEMENT --- */}
       {showVoteModal && (
