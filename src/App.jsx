@@ -1,8 +1,5 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { Search, Trophy, Sparkles, Info, Star, ShieldCheck, Zap } from 'lucide-react';
-import confetti from 'canvas-confetti'; // Pour l'idée n°2
 import './App.css';
 
 const PRICE_PER_VOTE = 200;
@@ -10,36 +7,11 @@ const PRICE_PER_VOTE = 200;
 export default function App() {
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [showVoteModal, setShowVoteModal] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [voteData, setVoteData] = useState({ qty: 1, phone: '', network: 'TMONEY' });
-  const [oracleQuery, setOracleQuery] = useState("");
-  
-  // Réf pour l'effet de tapis rouge 3D
-  const containerRef = useRef(null);
 
-  useEffect(() => {
-    fetchCandidates();
-
-    // --- IDÉE N°2 : LE COEUR DE LA NATION (REALTIME EXPLOSION) ---
-    const channel = supabase
-      .channel('global-votes')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'candidates' }, (payload) => {
-        // Mise à jour live
-        setCandidates(prev => prev.map(c => c.id === payload.new.id ? { ...c, total_votes: payload.new.total_votes } : c));
-        
-        // EXPLOSION D'OR GLOBALE
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#d4af37', '#ffffff', '#6b21a8']
-        });
-      })
-      .subscribe();
-
-    return () => supabase.removeChannel(channel);
-  }, []);
+  useEffect(() => { fetchCandidates(); }, []);
 
   const fetchCandidates = async () => {
     const { data } = await supabase.from('candidates').select('*').order('total_votes', { ascending: false });
@@ -47,106 +19,98 @@ export default function App() {
     setLoading(false);
   };
 
-  // --- IDÉE N°4 : L'ORACLE (FILTRE INTELLIGENT) ---
-  const filteredCandidates = useMemo(() => {
-    return candidates.filter(c => 
-      c.name.toLowerCase().includes(oracleQuery.toLowerCase()) || 
-      (c.tags && c.tags.toLowerCase().includes(oracleQuery.toLowerCase()))
-    );
-  }, [candidates, oracleQuery]);
-
-  const handleVoteClick = (candidate) => { setSelectedCandidate(candidate); setShowVoteModal(true); };
-
-  const confirmPayment = async () => {
-    try {
-      const { error } = await supabase.functions.invoke('paygate-init', {
-        body: { candidateId: selectedCandidate.id, phoneNumber: voteData.phone, network: voteData.network, amount: voteData.qty * PRICE_PER_VOTE }
-      });
-      if (error) throw error;
-      alert("Demande envoyée !");
-      setShowVoteModal(false);
-    } catch (e) { alert(e.message); }
+  const handleVoteClick = (c) => {
+    setSelectedCandidate(c);
+    setShowVoteModal(true);
   };
 
-  if (loading) return <div className="cosmic-loader"><div className="sun"></div></div>;
+  const confirmPayment = async () => {
+    if (voteData.phone.length < 8) return alert("Numéro invalide");
+    const { error } = await supabase.functions.invoke('paygate-init', {
+      body: { candidateId: selectedCandidate.id, phoneNumber: voteData.phone, network: voteData.network, amount: voteData.qty * PRICE_PER_VOTE }
+    });
+    if (error) alert(error.message);
+    else { alert("✅ Demande envoyée !"); setShowVoteModal(false); }
+  };
+
+  if (loading) return <div className="loader">CHARGEMENT...</div>;
+
+  const vedette = candidates[0]; // La 1ère candidate du classement
+  const others = candidates.slice(1); // Les autres
 
   return (
-    <div className="olympus-root">
-      {/* --- IDÉE N°1 : L'OLYMPE (FOND SPATIAL ANIMÉ) --- */}
-      <div className="nebula-bg"></div>
-      <div className="stars-layer"></div>
+    <div className="site-gala">
+      {/* --- SECTION 1 : HERO BANNER --- */}
+      <section className="hero-banner">
+        <div className="hero-content">
+          <h1>VOTEZ POUR<br/>VOTRE MISS</h1>
+          <p>Participez au vote et soutenez votre candidate favorite pour devenir la prochaine Miss Intello.</p>
+          <a href="#candidates" className="btn-outline">VOTER</a>
+        </div>
+        <div className="hero-image">
+          <img src="/assets/hero-miss.png" alt="Miss Intello" /> {/* Mets ta photo de couverture ici */}
+        </div>
+      </section>
 
       <div className="container">
-        <header className="cosmic-header">
-          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="crown-icon">
-            <Trophy size={50} color="#d4af37" />
-          </motion.div>
-          <h1 className="main-title">Miss Intello <span>2026</span></h1>
-          <p className="glitch-text">Édition Grandiose</p>
-        </header>
+        {/* --- SECTION 2 : MISS EN VEDETTE --- */}
+        {vedette && (
+          <section className="vedette-section">
+            <h2 className="section-title">MISS EN VEDETTE</h2>
+            <div className="vedette-card">
+              <img src={vedette.photo_url} alt={vedette.name} />
+              <div className="vedette-info">
+                <h3>{vedette.name}</h3>
+                <p>{vedette.age} ans -- {vedette.region || 'Togo'}</p>
+                <button className="btn-outline-small" onClick={() => handleVoteClick(vedette)}>VOTER</button>
+              </div>
+            </div>
+          </section>
+        )}
 
-        {/* --- L'ORACLE --- */}
-        <div className="oracle-container">
-          <div className="oracle-box">
-            <Sparkles className="oracle-icon" />
-            <input 
-              placeholder="Demandez à l'Oracle (ex: Leadership, Éducation...)" 
-              onChange={(e) => setOracleQuery(e.target.value)}
-            />
+        {/* --- SECTION 3 : GRILLE CANDIDATES --- */}
+        <section id="candidates" className="grid-section">
+          <h2 className="section-title">CANDIDATES</h2>
+          <div className="candidates-grid">
+            {others.map(c => (
+              <div key={c.id} className="mini-card">
+                <div className="mini-img-container" onClick={() => setSelectedCandidate(c)}>
+                   <img src={c.photo_url} alt={c.name} />
+                </div>
+                <div className="mini-info">
+                  <h4>{c.name}</h4>
+                  <p>{c.age} ans : {c.region || 'Togo'}</p>
+                  <p className="votes-count">{c.total_votes} votes</p>
+                  <button className="btn-gold-vote" onClick={() => handleVoteClick(c)}>
+                    ❤ VOTER
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-
-        {/* --- IDÉE N°3 : LE TAPIS ROUGE VIRTUEL (SCROLL 3D) --- */}
-        <motion.div 
-          className="virtual-red-carpet"
-          ref={containerRef}
-          initial="hidden"
-          whileInView="visible"
-        >
-          <div className="grid-3d">
-            {filteredCandidates.map((c, index) => {
-              // Calcul de l'AURA (Plus elle a de votes, plus elle brille)
-              const auraStrength = Math.min((c.total_votes || 0) / 100, 1);
-              
-              return (
-                <motion.div 
-                  key={c.id}
-                  className="card-3d"
-                  whileHover={{ rotateY: 10, rotateX: -5, scale: 1.05 }}
-                  style={{ 
-                    boxShadow: `0 0 ${40 * auraStrength}px rgba(212, 175, 55, ${0.4 * auraStrength})`,
-                    borderColor: auraStrength > 0.5 ? 'var(--primary-gold)' : 'var(--glass-border)'
-                  }}
-                >
-                  <div className="image-wrapper" onClick={() => setSelectedCandidate(c)}>
-                    <img src={c.photo_url} alt={c.name} />
-                    <div className="aura-effect" style={{ opacity: auraStrength }}></div>
-                  </div>
-                  <div className="card-content">
-                    <h3 translate="no">{c.name}</h3>
-                    <div className="vote-badge">
-                      <Zap size={14} /> {c.total_votes || 0} VOIX
-                    </div>
-                    <button className="btn-olympus" onClick={() => handleVoteClick(c)}>VOTER</button>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.div>
+        </section>
       </div>
 
-      {/* FOOTER MENTIONS LÉGALES */}
-      <footer className="cosmic-footer">
-        <div className="footer-line"></div>
-        <p>© 2026 Miss Intello Final - Sécurité de vote certifiée par PayGate Global</p>
-        <div className="legal-links">
-          <span onClick={() => alert("Votes non remboursables.")}>CGV</span> • 
-          <span onClick={() => alert("Données chiffrées.")}>Confidentialité</span>
+      {/* --- MODAL PAIEMENT (Garder ton style violet/or précédent ou celui-là) --- */}
+      {showVoteModal && (
+        <div className="payment-overlay" onClick={() => setShowVoteModal(false)}>
+          <div className="payment-modal" onClick={e => e.stopPropagation()}>
+            <h2>Soutenir {selectedCandidate.name}</h2>
+            <div className="payment-form">
+                <label>Réseau</label>
+                <div className="net-selector">
+                    <button className={voteData.network === 'TMONEY' ? 'active' : ''} onClick={() => setVoteData({...voteData, network:'TMONEY'})}>TMONEY</button>
+                    <button className={voteData.network === 'FLOOZ' ? 'active' : ''} onClick={() => setVoteData({...voteData, network:'FLOOZ'})}>FLOOZ</button>
+                </div>
+                <label>Téléphone</label>
+                <input type="tel" maxLength="8" onChange={(e) => setVoteData({...voteData, phone: e.target.value})} />
+                <label>Nombre de votes (200F/u)</label>
+                <input type="number" min="1" value={voteData.qty} onChange={(e) => setVoteData({...voteData, qty: e.target.value})} />
+                <button className="btn-confirm" onClick={confirmPayment}>PAYER {voteData.qty * 200} FCFA</button>
+            </div>
+          </div>
         </div>
-      </footer>
-
-      {/* ... (Garder tes modales détails et paiement ici) ... */}
+      )}
     </div>
   );
 }
