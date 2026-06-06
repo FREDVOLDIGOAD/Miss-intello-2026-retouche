@@ -219,7 +219,7 @@ export default function App() {
               />
 
               <div className="total-box">
-                Total à payer : <span>{(voteData.qty * PRICE_PER_VOTE).toLocaleString()} FCFA</span>
+                Total à payer : <span>{`${(voteData.qty * PRICE_PER_VOTE).toLocaleString()} FCFA`}</span>
               </div>
 
               <button className="confirm-btn" onClick={confirmPayment} disabled={isProcessing || voteData.qty <= 0}>
