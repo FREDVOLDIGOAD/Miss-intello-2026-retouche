@@ -129,26 +129,49 @@ export default function App() {
           </div>
         </>
       ) : (
-        /* VUE DÉTAILLÉE (Affichée uniquement si on ne vote pas) */
+        {/* VUE DÉTAILLÉE (MODAL DÉTAILS AVEC PHOTO ET PARTAGE) */}
+      {selectedCandidate && !showVoteModal && (
         <div className="modal-overlay" onClick={() => setSelectedCandidate(null)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-content modal-detail-full" onClick={e => e.stopPropagation()}>
             <button className="close-modal" onClick={() => setSelectedCandidate(null)}>&times;</button>
-            <div className="modal-header">
-                <span className="badge-miss">MISS</span>
+            
+            <div className="modal-split">
+              {/* CÔTÉ GAUCHE : LA PHOTO */}
+              <div className="modal-photo-side">
+                <img src={selectedCandidate.photo_url || 'https://via.placeholder.com/400x600'} alt={selectedCandidate.name} />
+              </div>
+
+              {/* CÔTÉ DROIT : LES INFOS */}
+              <div className="modal-info-side">
+                <span className="badge-miss">MISS INTELLO 2026</span>
                 <h2 className="modal-name">{selectedCandidate.name}</h2>
+
+                <div className="modal-grid-specs">
+                  <div className="spec-card"><span>Âge</span><strong>{selectedCandidate.age || '--'} ans</strong></div>
+                  <div className="spec-card"><span>Taille</span><strong>{selectedCandidate.taille || '--'} m</strong></div>
+                  <div className="spec-card"><span>Poids</span><strong>{selectedCandidate.poids || '--'} kg</strong></div>
+                </div>
+
+                <div className="stat-card-large">
+                  <span className="stat-label">Score actuel</span>
+                  <span className="stat-value">{selectedCandidate.total_votes || 0} VOTES</span>
+                </div>
+
+                <div className="bio-section">
+                  <div className="bio-title">📖 Biographie</div>
+                  <p className="bio-text">{selectedCandidate.biography || "Biographie en cours de rédaction..."}</p>
+                </div>
+
+                <div className="modal-actions-footer">
+                  <button className="btn-main-vote" onClick={() => handleVoteClick(selectedCandidate)}>
+                    ❤️ VOTER POUR ELLE
+                  </button>
+                  <button className="btn-share-alt" onClick={() => handleShare(selectedCandidate)}>
+                    🔗 PARTAGER LE PROFIL
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="modal-grid-specs">
-                <div className="spec-card"><span>Âge</span><strong>{selectedCandidate.age || '--'} ans</strong></div>
-                <div className="spec-card"><span>Taille</span><strong>{selectedCandidate.taille || '--'} m</strong></div>
-                <div className="spec-card"><span>Poids</span><strong>{selectedCandidate.poids || '--'} kg</strong></div>
-            </div>
-            <div className="bio-section">
-                <div className="bio-title">📖 Biographie</div>
-                <p className="bio-text">{selectedCandidate.biography || "Biographie à venir..."}</p>
-            </div>
-            <button className="btn-main-vote" onClick={() => handleVoteClick(selectedCandidate)}>
-                ❤️ Voter pour {selectedCandidate.name}
-            </button>
           </div>
         </div>
       )}
