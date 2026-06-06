@@ -166,12 +166,12 @@ export default function App() {
                   
                   <div className="spec-box-luxury">
                     <span className="spec-label-luxury">TAILLE</span>
-                    <strong className="spec-value-luxury">{selectedCandidate.taille || '--'} m</strong>
+                    <strong className="spec-value-luxury">{selectedCandidate.taille || '--'}</strong>
                   </div>
 
                   <div className="spec-box-luxury">
                     <span className="spec-label-luxury">POIDS</span>
-                    <strong className="spec-value-luxury">{selectedCandidate.poids || '--'} kg</strong>
+                    <strong className="spec-value-luxury">{selectedCandidate.poids || '--'}</strong>
                   </div>
                 </div>
 
