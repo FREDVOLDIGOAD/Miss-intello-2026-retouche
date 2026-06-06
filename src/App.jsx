@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckSquare, Banknote, BookOpen, Heart, X } from 'lucide-react'; // Import des icônes exactes
-import { Heart, MessageSquare, Share2, X, Trophy, Timer, Info } from 'lucide-react';
+import { MessageSquare, Share2, Trophy, Timer, Info } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import './App.css';
 
