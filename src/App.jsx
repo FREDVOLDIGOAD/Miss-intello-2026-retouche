@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageSquare, Share2, X, Trophy, Timer } from 'lucide-react';
+import { Heart, MessageSquare, Share2, X, Trophy, Timer, Info } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import './App.css';
 
@@ -18,15 +18,12 @@ export default function App() {
 
   useEffect(() => {
     fetchCandidates();
-    
-    // TEMPS RÉEL : Explosion de confettis et mise à jour live
     const channel = supabase.channel('live-ranking')
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'candidates' }, (payload) => {
-        setCandidates(prev => prev.map(c => c.id === payload.new.id ? payload.new : c).sort((a,b) => b.total_votes - a.total_votes));
+        fetchCandidates(); // Re-fetch pour garder le tri correct
         confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#d4af37', '#6b21a8'] });
       }).subscribe();
 
-    // COMPTE À REBOURS
     const timer = setInterval(() => {
       const diff = ELECTION_DATE - new Date().getTime();
       setTimeLeft({
@@ -36,7 +33,6 @@ export default function App() {
         secs: Math.max(0, Math.floor((diff % 60000) / 1000))
       });
     }, 1000);
-
     return () => { supabase.removeChannel(channel); clearInterval(timer); };
   }, []);
 
@@ -47,7 +43,6 @@ export default function App() {
   };
 
   const handleVoteClick = (c) => { setSelectedCandidate(c); setShowVoteModal(true); };
-  
   const handleShare = async (c) => {
     try { await navigator.share({ title: `Votez pour ${c.name}`, url: window.location.href }); }
     catch { navigator.clipboard.writeText(window.location.href); alert("Lien copié !"); }
@@ -65,19 +60,20 @@ export default function App() {
     } catch (err) { alert("Erreur : " + err.message); }
   };
 
-  if (loading) return <div className="loading-screen"><div className="loader-sun"></div></div>;
+  if (loading) return <div className="loading">CHARGEMENT...</div>;
 
   const top3 = candidates.slice(0, 3);
-  const others = candidates.slice(3);
 
   return (
     <div className="olympus-root">
       <div className="nebula-bg"></div>
       <div className="container">
         
-        {/* HEADER & COUNTDOWN */}
-        <header className="cosmic-header">
-          <motion.h1 initial={{y:-50}} animate={{y:0}} className="main-title">Miss Intello <span>2026</span></motion.h1>
+        {/* --- HEADER --- */}
+        <header className="main-header">
+          <h1 className="logo">Miss Intello <span>2026</span></h1>
+          <p className="subtitle">L'intelligence est la nouvelle beauté</p>
+          
           <div className="countdown-box">
              <div className="timer-item"><span>{timeLeft.days}</span><label>Jours</label></div>
              <div className="timer-item"><span>{timeLeft.hours}</span><label>H</label></div>
@@ -86,23 +82,18 @@ export default function App() {
           </div>
         </header>
 
-        {/* SECTION PODIUM AMÉLIORÉE */}
+        {/* --- SECTION PODIUM (IMAGE 1) --- */}
         <section className="podium-section">
           <h2 className="section-title"><Trophy size={28} color="#d4af37"/> Le Podium de l'Excellence</h2>
           <div className="podium-grid">
             {top3.map((c, index) => (
-              <motion.div 
-                key={c.id} 
-                layout
-                className={`podium-card rank-${index + 1}`}
-                onClick={() => setSelectedCandidate(c)}
-              >
+              <motion.div key={c.id} layout className={`podium-card rank-${index + 1}`} onClick={() => setSelectedCandidate(c)}>
                 <div className="rank-badge-container">
                   <div className="rank-glow"></div>
                   <div className="rank-number">{index + 1}</div>
                 </div>
                 <div className="podium-avatar">
-                  <img src={c.photo_url || 'https://via.placeholder.com/150'} alt={c.name} />
+                  <img src={c.photo_url} alt={c.name} />
                 </div>
                 <div className="podium-info">
                   <h4 translate="no">{c.name}</h4>
@@ -113,23 +104,36 @@ export default function App() {
           </div>
         </section>
 
-        {/* RESTE DES CANDIDATES */}
-        <div className="grid-3d">
-          {others.map((c) => (
-            <motion.div layout key={c.id} className="card-3d" onClick={() => setSelectedCandidate(c)}>
-              <div className="image-wrapper">
-                <img src={c.photo_url} alt={c.name} />
-                <div className="card-overlay-text">
-                    <h4 translate="no">{c.name}</h4>
-                    <span className="gold-text">{c.total_votes} VOIX</span>
+        {/* --- SECTION GRILLE CANDIDATES (IMAGE 2) --- */}
+        <section className="grid-section">
+          <h2 className="section-title">Les Candidates</h2>
+          <div className="candidates-grid">
+            {candidates.map((c) => (
+              <div key={c.id} className="candidate-main-card">
+                <div className="card-img-wrapper" onClick={() => setSelectedCandidate(c)}>
+                  <img src={c.photo_url} alt={c.name} />
+                </div>
+                <div className="card-body">
+                  <h3 className="card-name" translate="no">{c.name}</h3>
+                  <div className="card-votes">
+                    <span className="votes-number">{c.total_votes || 0}</span>
+                    <span className="votes-label">VOTES</span>
+                  </div>
+                  <button className="btn-vote-gold" onClick={() => handleVoteClick(c)} translate="no">
+                    VOTER
+                  </button>
+                  <div className="card-actions">
+                    <button onClick={() => setSelectedCandidate(c)}>Détails</button>
+                    <button onClick={() => handleShare(c)}>Partager</button>
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </section>
       </div>
 
-      {/* MODAL DÉTAILS STYLE EMMA */}
+      {/* --- MODAL DÉTAILS (Emma Style) --- */}
       <AnimatePresence>
         {selectedCandidate && !showVoteModal && (
           <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="emma-overlay" onClick={() => setSelectedCandidate(null)}>
@@ -138,29 +142,27 @@ export default function App() {
               <div className="emma-photo"><img src={selectedCandidate.photo_url} alt="" /></div>
               <div className="emma-body">
                 <h2 className="emma-title" translate="no">{selectedCandidate.name}, {selectedCandidate.age}</h2>
-                <p className="emma-sub">{selectedCandidate.region}</p>
+                <p className="emma-sub">{selectedCandidate.region || 'Candidate Officielle'}</p>
                 <div className="emma-specs">
-                    <div><span>Taille</span><strong>{selectedCandidate.taille}</strong></div>
-                    <div><span>Poids</span><strong>{selectedCandidate.poids}</strong></div>
-                    <div><span>Votes</span><strong>{selectedCandidate.total_votes}</strong></div>
+                    <div><span>Taille</span><strong>{selectedCandidate.taille || '--'}</strong></div>
+                    <div><span>Poids</span><strong>{selectedCandidate.poids || '--'}</strong></div>
+                    <div><span>Âge</span><strong>{selectedCandidate.age || '--'} ans</strong></div>
                 </div>
-                <button className="emma-btn-vote" onClick={() => handleVoteClick(selectedCandidate)} translate="no">VOTER</button>
-                <div className="emma-icons">
-                    <div onClick={() => handleVoteClick(selectedCandidate)}><Heart color="#f2d06b"/><span>Vote</span></div>
-                    <div><MessageSquare color="#f2d06b"/><span>Commentaires</span></div>
-                    <div onClick={() => handleShare(selectedCandidate)}><Share2 color="#f2d06b"/><span>Partager</span></div>
+                <div className="bio-section">
+                   <p>{selectedCandidate.biography || "Biographie en cours de rédaction..."}</p>
                 </div>
+                <button className="emma-btn-vote" onClick={() => handleVoteClick(selectedCandidate)} translate="no">VOTER POUR ELLE</button>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* MODAL PAIEMENT */}
+      {/* --- MODAL PAIEMENT --- */}
       {showVoteModal && (
         <div className="payment-overlay" onClick={() => setShowVoteModal(false)}>
           <div className="payment-modal" onClick={e => e.stopPropagation()}>
-            <h2 className="gold-text">Finaliser le Vote</h2>
+            <h2 className="gold-text">Soutenir {selectedCandidate.name}</h2>
             <div className="payment-form">
                 <div className="net-selector">
                     <button className={voteData.network === 'TMONEY' ? 'active' : ''} onClick={() => setVoteData({...voteData, network:'TMONEY'})}>TMONEY</button>
@@ -174,10 +176,6 @@ export default function App() {
           </div>
         </div>
       )}
-
-      <footer className="cosmic-footer">
-        <p>© 2026 Miss Intello Togo - <a href="#/" onClick={() => alert("Comité Miss Intello. Paiements par PayGate Global.")}>Mentions Légales</a></p>
-      </footer>
     </div>
   );
 }
