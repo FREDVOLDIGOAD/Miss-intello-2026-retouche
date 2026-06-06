@@ -177,7 +177,7 @@ header {
 /* --- STYLE SPLIT MODAL (PHOTO + INFOS) --- */
 
 .modal-detail-full {
-  max-width: 900px !important; /* On l'élargit pour l'effet split */
+  max-width: 800px !important; /* On l'élargit pour l'effet split */
   padding: 0 !important; /* On enlève le padding pour que la photo colle au bord */
   overflow: hidden;
 }
