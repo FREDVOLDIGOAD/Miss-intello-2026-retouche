@@ -17,12 +17,34 @@ export default function App() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
 
   useEffect(() => {
-    fetchCandidates();
+    // Variable pour limiter les confettis (en haut de l'effet)
+    let lastConfettiTime = 0;
+
     const channel = supabase.channel('live-ranking')
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'candidates' }, (payload) => {
-        fetchCandidates(); // Re-fetch pour garder le tri correct
-        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#d4af37', '#6b21a8'] });
-      }).subscribe();
+        
+        // 1. MISE À JOUR LOCALE (Ultra rapide, pas de chargement réseau)
+        setCandidates(prev => {
+          const updated = prev.map(c => 
+            c.id === payload.new.id ? { ...c, total_votes: payload.new.total_votes } : c
+          );
+          // On trie à nouveau pour que le podium bouge si besoin
+          return [...updated].sort((a, b) => b.total_votes - a.total_votes);
+        });
+
+        // 2. SÉCURITÉ CONFETTIS (Maximum une explosion toutes les 500ms)
+        const now = Date.now();
+        if (now - lastConfettiTime > 500) {
+          confetti({ 
+            particleCount: 100, 
+            spread: 70, 
+            origin: { y: 0.6 }, 
+            colors: ['#d4af37', '#6b21a8'] 
+          });
+          lastConfettiTime = now;
+        }
+      })
+      .subscribe();
 
     const timer = setInterval(() => {
       const diff = ELECTION_DATE - new Date().getTime();
@@ -166,7 +188,7 @@ export default function App() {
                   
                   <div className="spec-box-luxury">
                     <span className="spec-label-luxury">TAILLE</span>
-                    <strong className="spec-value-luxury">{selectedCandidate.taille || '--'}</strong>
+                    <strong className="spec-value-luxury">{selectedCandidate.taille || '--'} </strong>
                   </div>
 
                   <div className="spec-box-luxury">
