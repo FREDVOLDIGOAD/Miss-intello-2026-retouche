@@ -182,9 +182,9 @@ export default function App() {
                   <div className="badge-miss-gold">MISS</div>
                   <h2 className="candidate-title-main">{selectedCandidate.name}</h2>
                   <div className="specs-container-luxury">
-                    <div className="spec-box-luxury"><span>ÂGE</span><strong>{selectedCandidate.age || '--'} ans</strong></div>
-                    <div className="spec-box-luxury"><span>TAILLE</span><strong>{selectedCandidate.taille || '--'}</strong></div>
-                    <div className="spec-box-luxury"><span>POIDS</span><strong>{selectedCandidate.poids || '--'}</strong></div>
+                    <div className="spec-box-luxury"><span>ÂGE :</span><strong>{selectedCandidate.age || '--'} ans</strong></div>
+                    <div className="spec-box-luxury"><span>TAILLE :</span><strong>{selectedCandidate.taille || '--'}</strong></div>
+                    <div className="spec-box-luxury"><span>POIDS :</span><strong>{selectedCandidate.poids || '--'}</strong></div>
                   </div>
                   <div className="stats-row">
                     <div className="mini-stat-card">
