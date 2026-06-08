@@ -598,3 +598,53 @@ input { width: 100%; padding: 15px; margin-bottom: 15px; background: #000; borde
   animation: shine-gold 3s linear infinite;
 }
 
+/*bandeau de vérification*/
+.verification-banner {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid var(--gold);
+  border-radius: 15px;
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  backdrop-filter: blur(10px);
+  gap: 20px;
+}
+
+.banner-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: #eee;
+}
+
+.btn-verify {
+  background: var(--gold);
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.3s;
+}
+
+.btn-verify:hover {
+  filter: brightness(1.2);
+  transform: scale(1.05);
+}
+
+.btn-verify:disabled {
+  background: #444;
+  color: #888;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .verification-banner { flex-direction: column; text-align: center; }
+  .btn-verify { width: 100%; }
+}

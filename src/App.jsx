@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageSquare, Share2, X, Trophy, CheckSquare, Banknote, BookOpen } from 'lucide-react';
+import { Heart, MessageSquare, Share2, X, Trophy, CheckSquare, Banknote, BookOpen, Zap } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import './App.css';
 
@@ -15,6 +15,8 @@ export default function App() {
   const [showVoteModal, setShowVoteModal] = useState(false);
   const [voteData, setVoteData] = useState({ qty: 1, phone: '', network: 'TMONEY' });
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
+  const [pendingId, setPendingId] = useState(localStorage.getItem('pendingVoteId') || null);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   // --- CHARGEMENT DES DONNÉES SÉCURISÉ ---
   const fetchCandidates = async () => {
@@ -91,11 +93,34 @@ export default function App() {
         body: { candidateId: selectedCandidate.id, phoneNumber: voteData.phone, network: voteData.network, amount: voteData.qty * PRICE_PER_VOTE }
       });
       if (error) throw error;
+      localStorage.setItem('pendingVoteId', data.identifier);
+      setPendingId(data.identifier);
       alert("✅ Demande envoyée ! Confirmez avec votre code PIN sur votre téléphone.");
       setShowVoteModal(false);
     } catch (err) { alert("Erreur : " + err.message); }
   };
+  const verifyMyVote = async () => {
+    if (!pendingId) return;
+    setIsVerifying(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('paygate-verify', {
+        body: { identifier: pendingId }
+      });
 
+      if (data?.success) {
+        alert("🎉 Vote confirmé ! Merci pour votre soutien.");
+        localStorage.removeItem('pendingVoteId'); // On efface la mémoire
+        setPendingId(null); // On cache le bandeau
+        fetchCandidates(); // On met à jour les scores
+      } else {
+        alert("ℹ️ Paiement non encore détecté. Si vous avez déjà validé sur votre téléphone, attendez 1 minute et réessayez.");
+      }
+    } catch (e) {
+      alert("Erreur lors de la communication avec le serveur.");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
   if (loading) return <div className="loading" style={{display:'flex', height:'100vh', alignItems:'center', justifyContent:'center', color:'#d4af37', letterSpacing:'4px'}}>CHARGEMENT DE L'ÉLÉGANCE...</div>;
 
   const top3 = candidates.slice(0, 3);
@@ -116,6 +141,21 @@ export default function App() {
              <div className="timer-item"><span>{timeLeft.secs}</span><label>S</label></div>
           </div>
         </header>
+        {pendingId && (
+          <div className="verification-banner" style={{marginBottom: '30px'}}>
+            <div className="banner-text">
+              <Zap size={20} color="var(--gold)" />
+              <span>Vous avez un vote en attente de confirmation.</span>
+            </div>
+            <button 
+              onClick={verifyMyVote} 
+              disabled={isVerifying} 
+              className="btn-verify"
+            >
+              {isVerifying ? "VÉRIFICATION..." : "VÉRIFIER MON VOTE"}
+            </button>
+          </div>
+        )}
 
         <section className="podium-section">
           <h2 className="section-title"><Trophy size={28} color="#d4af37"/> Le Podium de l'Excellence</h2>
