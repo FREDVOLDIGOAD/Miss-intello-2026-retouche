@@ -89,16 +89,28 @@ export default function App() {
   const confirmPayment = async () => {
     if (voteData.phone.length < 8) return alert("Numéro invalide (8 chiffres requis)");
     try {
-      const { error } = await supabase.functions.invoke('paygate-init', {
-        body: { candidateId: selectedCandidate.id, phoneNumber: voteData.phone, network: voteData.network, amount: voteData.qty * PRICE_PER_VOTE }
-      });
-      if (error) throw error;
-      localStorage.setItem('pendingVoteId', data.identifier);
-      setPendingId(data.identifier);
-      alert("✅ Demande envoyée ! Confirmez avec votre code PIN sur votre téléphone.");
-      setShowVoteModal(false);
-    } catch (err) { alert("Erreur : " + err.message); }
-  };
+        // ✅ Correction ici : on ajoute "data" dans l'extraction
+        const { data, error } = await supabase.functions.invoke('paygate-init', {
+          body: { 
+            candidateId: selectedCandidate.id, 
+            phoneNumber: voteData.phone, 
+            network: voteData.network,
+            amount: voteData.qty * 200
+          }
+        });
+
+        if (error) throw error;
+
+        // ✅ On vérifie que data existe bien avant de l'utiliser
+        if (data && data.identifier) {
+          localStorage.setItem('pendingVoteId', data.identifier);
+          setPendingId(data.identifier);
+          alert("✅ Demande envoyée ! Confirmez avec votre code PIN sur votre téléphone.");
+          setShowVoteModal(false);
+        }
+      } catch (err) {
+        alert("Erreur : " + err.message);
+      };
   const verifyMyVote = async () => {
     if (!pendingId) return;
     setIsVerifying(true);
