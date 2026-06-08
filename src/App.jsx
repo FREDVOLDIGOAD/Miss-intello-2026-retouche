@@ -141,7 +141,7 @@ export default function App() {
         <section className="grid-section">
           <h2 className="section-title">Les Candidates</h2>
           <div className="candidates-grid">
-            {others.map((c) => (
+            {candidates.map((c) => (
               <div key={c.id} className="candidate-main-card">
                 <div className="card-img-wrapper" onClick={() => setSelectedCandidate(c)}>
                   <img src={c.photo_url} alt={c.name} onError={(e) => e.target.src='https://via.placeholder.com/400x600?text=Photo'} />
