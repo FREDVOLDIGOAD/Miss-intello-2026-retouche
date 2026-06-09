@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, MessageSquare, Share2, X, Trophy, CheckSquare, Banknote, BookOpen } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import './App.css';
+import AdminPortal from './AdminPortal';
 
 const PRICE_PER_VOTE = 200;
 const ELECTION_DATE = new Date('2026-08-15T20:00:00').getTime();
@@ -15,6 +16,8 @@ export default function App() {
   const [showVoteModal, setShowVoteModal] = useState(false);
   const [voteData, setVoteData] = useState({ qty: 1, phone: '', network: 'TMONEY' });
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminPin, setAdminPin] = useState("");
 
   // --- CHARGEMENT DES DONNÉES SÉCURISÉ ---
   const fetchCandidates = async () => {
@@ -31,6 +34,17 @@ export default function App() {
     } finally {
       // Cette ligne s'exécutera QUOI QU'IL ARRIVE au bout de la requête
       setLoading(false); 
+    }
+  };
+
+  const handleAdminLogin = (e) => {
+    e.preventDefault();
+    if (adminPin === "2026") { 
+      setIsAdmin(true);
+      sessionStorage.setItem("miss_admin_token", "verified");
+    } else {
+      alert("Code PIN invalide.");
+      setAdminPin("");
     }
   };
 
@@ -93,6 +107,12 @@ export default function App() {
     }
   }, [candidates]); // On surveille quand la liste des candidates arrive de Supabase
 
+  useEffect(() => {
+    if (sessionStorage.getItem("miss_admin_token") === "verified") {
+      setIsAdmin(true);
+    }
+  }, []);
+
   const handleVoteClick = (c) => { setSelectedCandidate(c); setShowVoteModal(true); };
   
   const handleShare = async (c) => {
@@ -128,6 +148,35 @@ export default function App() {
       setShowVoteModal(false);
     } catch (err) { alert("Erreur : " + err.message); }
   };
+
+  if (window.location.pathname === "/admin") {
+    if (!isAdmin) {
+      return (
+        <div className="admin-login-screen">
+          <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="login-card">
+            <Trophy size={50} color="#d4af37" />
+            <h2>Accès Comité</h2>
+            <p>Espace sécurisé - Clé d'or requise</p>
+            <form onSubmit={handleAdminLogin}>
+              <input 
+                type="password" 
+                placeholder="****" 
+                maxLength="4" 
+                value={adminPin} 
+                onChange={(e) => setAdminPin(e.target.value)} 
+              />
+              <button type="submit">S'IDENTIFIER</button>
+            </form>
+            <a href="/" className="back-link">Retour au site public</a>
+          </motion.div>
+        </div>
+      );
+    }
+    return <AdminPortal onBack={() => {
+        sessionStorage.removeItem("miss_admin_token");
+        window.location.href = "/";
+    }} />;
+  }
 
   if (loading) return <div className="loading" style={{display:'flex', height:'100vh', alignItems:'center', justifyContent:'center', color:'#d4af37', letterSpacing:'4px'}}>CHARGEMENT DE L'ÉLÉGANCE...</div>;
 

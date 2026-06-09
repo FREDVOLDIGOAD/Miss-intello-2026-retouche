@@ -598,3 +598,33 @@ input { width: 100%; padding: 15px; margin-bottom: 15px; background: #000; borde
   animation: shine-gold 3s linear infinite;
 }
 
+/* --- ADMIN STYLES --- */
+.admin-root { padding-top: 50px; background: #050214; min-height: 100vh; }
+.admin-nav { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 50px; }
+.admin-main-title { font-family: 'Cinzel', serif; font-size: 2.5rem; margin: 0; letter-spacing: 4px; }
+.admin-main-title span { color: var(--gold); }
+.admin-subtitle { color: #666; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; }
+
+.admin-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 50px; }
+.stat-card-gold { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 30px; border-radius: 25px; display: flex; align-items: center; gap: 20px; }
+.stat-icon-circle { background: rgba(255,255,255,0.05); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.stat-data label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 5px; }
+.stat-data strong { font-size: 1.8rem; font-weight: 900; }
+
+.admin-dashboard-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+.admin-panel { background: rgba(255,255,255,0.01); border: 1px solid var(--glass-border); border-radius: 30px; padding: 30px; }
+.panel-header h3 { margin: 0 0 25px; display: flex; align-items: center; gap: 10px; color: var(--gold); font-size: 1.1rem; }
+
+.tx-row-admin { display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.tx-dot { width: 8px; height: 8px; border-radius: 50%; }
+.tx-dot.success { background: #00d1b2; box-shadow: 0 0 10px #00d1b2; }
+.tx-dot.pending { background: #ffa500; }
+.tx-details-admin p { margin: 0; font-size: 0.9rem; }
+.tx-details-admin span { font-size: 0.75rem; color: #555; }
+.tx-value { margin-left: auto; color: var(--gold); font-weight: bold; }
+
+/* Login Screen */
+.admin-login-screen { height: 100vh; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle, #1a0b2e, #050214); }
+.login-card { background: var(--glass); padding: 50px; border-radius: 30px; border: 1px solid var(--gold); text-align: center; max-width: 400px; width: 90%; }
+.login-card input { background: #000; border: 1px solid #333; padding: 20px; border-radius: 15px; color: white; width: 100%; text-align: center; font-size: 2rem; letter-spacing: 15px; margin: 30px 0 20px; box-sizing: border-box; }
+.back-link { display: block; margin-top: 20px; color: #666; text-decoration: none; font-size: 0.8rem; }
