@@ -119,3 +119,41 @@ export default function AdminPortal({ onBack }) {
     </motion.div>
   );
 }
+
+{/* --- SECTION TOP 20 STYLE INFOGRAPHIE --- */}
+<div className="admin-leaderboard-section">
+  <div className="panel-header">
+    <h3><Trophy size={20} color="var(--gold)" /> Top 20 : Classement en temps réel</h3>
+  </div>
+
+  <div className="leaderboard-table">
+    <div className="leaderboard-header">
+      <span className="col-rank">Rang</span>
+      <span className="col-name">Candidate</span>
+      <span className="col-bar">Progression des votes</span>
+    </div>
+
+    {candidates.slice(0, 20).map((c, index) => {
+      // Calcul du pourcentage par rapport à la 1ère (pour la longueur de la barre)
+      const maxVotes = candidates[0]?.total_votes || 1;
+      const percentage = ((c.total_votes || 0) / maxVotes) * 100;
+
+      return (
+        <div key={c.id} className="leaderboard-row">
+          <span className="col-rank">{index + 1}</span>
+          <span className="col-name" translate="no">{c.name}</span>
+          <div className="col-bar">
+            <div className="bar-container">
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `${percentage}%` }}
+                className={`bar-fill rank-${index + 1 <= 3 ? index + 1 : 'others'}`}
+              ></motion.div>
+              <span className="vote-value">{c.total_votes?.toLocaleString()} votes</span>
+            </div>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</div>
