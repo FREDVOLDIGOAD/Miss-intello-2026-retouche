@@ -149,26 +149,24 @@ export default function App() {
     } catch (err) { alert("Erreur : " + err.message); }
   };
 
-  if (window.location.pathname === "/admin") {
+  if (window.location.pathname.includes("/admin")) {
     if (!isAdmin) {
       return (
-        <div className="admin-login-screen">
-          <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="login-card">
-            <Trophy size={50} color="#d4af37" />
-            <h2>Accès Comité</h2>
-            <p>Espace sécurisé - Clé d'or requise</p>
+        <div className="admin-login-screen" style={{background:'#050214', height:'100vh', display:'flex', justifyContent:'center', alignItems:'center', color:'white'}}>
+          <div className="login-card" style={{textAlign:'center', padding:'40px', border:'1px solid #d4af37', borderRadius:'20px', background:'rgba(255,255,255,0.02)'}}>
+            <Trophy size={50} color="#d4af37" style={{marginBottom:'20px'}} />
+            <h2 style={{fontFamily:'serif'}}>Espace Comité</h2>
             <form onSubmit={handleAdminLogin}>
               <input 
                 type="password" 
-                placeholder="****" 
-                maxLength="4" 
+                placeholder="PIN" 
                 value={adminPin} 
-                onChange={(e) => setAdminPin(e.target.value)} 
+                onChange={(e) => setAdminPin(e.target.value)}
+                style={{background:'#000', border:'1px solid #333', padding:'15px', borderRadius:'10px', color:'white', width:'100%', textAlign:'center', fontSize:'1.5rem', letterSpacing:'10px', margin:'20px 0'}}
               />
-              <button type="submit">S'IDENTIFIER</button>
+              <button type="submit" className="btn-confirm-final">ENTRER</button>
             </form>
-            <a href="/" className="back-link">Retour au site public</a>
-          </motion.div>
+          </div>
         </div>
       );
     }
