@@ -149,6 +149,7 @@ export default function App() {
     } catch (err) { alert("Erreur : " + err.message); }
   };
 
+  // --- LOGIQUE DE ROUTAGE ADMIN ---
   if (window.location.pathname.includes("/admin")) {
     if (!isAdmin) {
       return (
