@@ -75,47 +75,14 @@ export default function App() {
     return () => { supabase.removeChannel(channel); clearInterval(timer); };
   }, []);
 
-  // --- DÉTECTEUR DE LIEN PARTAGÉ (DEEP LINKING) ---
-  useEffect(() => {
-    // 1. Lire le paramètre "id" dans l'adresse
-    const params = new URLSearchParams(window.location.search);
-    const sharedNumber = params.get('id');
-
-    // 2. Si on trouve un numéro et que les candidates sont là
-    if (sharedNumber && candidates.length > 0) {
-      const target = candidates.find(c => String(c.candidate_number) === sharedNumber);
-      
-      if (target) {
-        // 3. Ouvrir la fiche automatiquement
-        setSelectedCandidate(target);
-        
-        // 4. Nettoyer l'URL pour que le "?id=X" disparaisse de la barre d'adresse
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-    }
-  }, [candidates]); // On surveille quand la liste des candidates arrive de Supabase
-
   const handleVoteClick = (c) => { setSelectedCandidate(c); setShowVoteModal(true); };
   
   const handleShare = async (c) => {
-    // Crée l'URL avec le numéro (ex: https://monsite.com?id=5)
-    const shareUrl = `${window.location.origin}?id=${c.candidate_number}`;
-    
-    const shareData = {
-      title: `Votez pour ${c.name}`,
-      text: `Soutenez ${c.name} (Candidate N°${c.candidate_number}) au concours Miss Intello 2026 !`,
-      url: shareUrl,
-    };
-
     try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
-        alert("Lien de la candidate copié ! Envoyez-le à vos proches.");
-      }
-    } catch (err) {
-      console.log("Annulation du partage");
+      await navigator.share({ title: `Votez pour ${c.name}`, url: window.location.href });
+    } catch {
+      navigator.clipboard.writeText(window.location.href);
+      alert("Lien de vote copié !");
     }
   };
 
@@ -144,6 +111,8 @@ export default function App() {
       } catch (err) {
         alert("Erreur : " + err.message);
       };
+    };
+    
   const verifyMyVote = async () => {
     if (!pendingId) return;
     setIsVerifying(true);
