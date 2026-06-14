@@ -9,6 +9,7 @@ const PRICE_PER_VOTE = 200;
 const ELECTION_DATE = new Date('2026-08-15T20:00:00').getTime();
 
 export default function App() {
+  const isMaintenance = true; // Change à false pour réactiver le site
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
@@ -135,6 +136,30 @@ export default function App() {
       setIsVerifying(false);
     }
   };
+
+  if (isMaintenance) {
+    return (
+      <div className="maintenance-root">
+        <div className="nebula-bg"></div>
+        <div className="maintenance-card">
+          <div className="maintenance-icon">👑</div>
+          <h1 className="logo">Miss Intello <span>2026</span></h1>
+          <h2>Maintenance Exceptionnelle</h2>
+          <p>
+            Nous préparons la suite du concours pour vous offrir une expérience encore plus grandiose. 
+            <br /><br />
+            <strong>Les votes sont momentanément suspendus.</strong> 
+            Nous revenons vers vous dans quelques heures.
+          </p>
+          <div className="maintenance-contact">
+            Besoin d'aide ? <br />
+            <span>comitemissintello1@gmail.com</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) return <div className="loading" style={{display:'flex', height:'100vh', alignItems:'center', justifyContent:'center', color:'#d4af37', letterSpacing:'4px'}}>CHARGEMENT DE L'ÉLÉGANCE...</div>;
 
   const top3 = candidates.slice(0, 3);
